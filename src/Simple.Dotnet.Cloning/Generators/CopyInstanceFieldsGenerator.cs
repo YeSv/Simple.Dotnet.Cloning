@@ -10,17 +10,14 @@ namespace Simple.Dotnet.Cloning.Generators
         {
             foreach (var field in fields)
             {
-                var nullableInnerType = Nullable.GetUnderlyingType(field.FieldType);
-                generator = field.FieldType switch
-                {
-                    // Primitive:
-                    { IsPrimitive: true } => generator.CopyFieldValue(owner, field),
+                var fieldType = field.FieldType;
+                var nullableInnerType = Nullable.GetUnderlyingType(fieldType);
 
-                    // Enum
-                    { IsEnum: true } => generator.CopyFieldValue(owner, field),
+                generator = fieldType switch
+                {
+                    { } when fieldType.IsSafeToCopyType() => generator.CopyFieldValue(owner, field),
 
                     // Nullable: 
-                    { IsValueType: true } when nullableInnerType != null && nullableInnerType.IsSafeToCopyValueType() => generator.CopyFieldValue(owner, field),
                     { IsValueType: true } when nullableInnerType != null => generator.CopyNullableField(field, owner, nullableInnerType),
                     
                     // Ref types and structs should be deep cloned

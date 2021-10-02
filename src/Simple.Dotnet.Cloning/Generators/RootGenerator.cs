@@ -7,6 +7,7 @@ namespace Simple.Dotnet.Cloning.Generators
     public static class RootGenerator
     {
         static readonly Type StringType = typeof(string);
+        static readonly Func<Type, FieldInfo[]> FieldsLazy = type => type.GetFields(FieldFlags);
         static readonly BindingFlags FieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
         static readonly MethodInfo MemberwiseClone = typeof(object).GetMethod(nameof(MemberwiseClone), BindingFlags.Instance | BindingFlags.NonPublic);
 
@@ -18,8 +19,9 @@ namespace Simple.Dotnet.Cloning.Generators
 
             _ =  type switch
             {
-                { IsValueType: true } => generator.CopyValueType(type, type.GetFields(FieldFlags)),
-                _ => generator.CopyFields(type, type.GetFields(FieldFlags))
+                { } when type.IsSafeToCopyType() => generator.CopyByValue(),
+                { IsValueType: true } => generator.CopyValueType(type, FieldsLazy(type)),
+                _ => generator.CopyFields(type, FieldsLazy(type))
             };
 
             generator.Emit(OpCodes.Ldloc_0); // Load clone
@@ -30,8 +32,7 @@ namespace Simple.Dotnet.Cloning.Generators
 
         public static ILGenerator Shallow(this ILGenerator generator, Type type)
         {
-            if (type.IsValueType) generator.Emit(OpCodes.Ldarg_0); // Just load struct onto evaluation stack
-            else if (type == StringType) generator.Emit(OpCodes.Ldarg_0); // Just load string (they are immutable)
+            if (type.IsSafeToCopyType()) generator.Emit(OpCodes.Ldarg_0); // Just load string (they are immutable)
             else
             {
                 generator.Emit(OpCodes.Ldarg_0); // Load local onto stack

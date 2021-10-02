@@ -5,8 +5,17 @@ using System.Runtime.CompilerServices;
 
 namespace Simple.Dotnet.Cloning.Generators
 {
-    public static class CopyFieldValueGenerator
+    public static class CopyByValueGenerator
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static ILGenerator CopyByValue(this ILGenerator generator)
+        {
+            generator.Emit(OpCodes.Ldarg_0);
+            generator.Emit(OpCodes.Stloc_0);
+
+            return generator;
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ILGenerator CopyFieldValue(this ILGenerator generator, Type owner, FieldInfo field)
         {
@@ -19,7 +28,5 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Emit(OpCodes.Stfld, field); // Store local's field
             return generator;
         }
-
-
     }
 }
