@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 
 namespace Simple.Dotnet.Cloning.Generators
 {
-    public static class InitializationGenerator
+    internal static class InitializationGenerator
     {
-        private static readonly MethodInfo GetUninitializedObject = typeof(FormatterServices).GetMethod(
+        static readonly MethodInfo GetUninitializedObject = typeof(FormatterServices).GetMethod(
             nameof(FormatterServices.GetSafeUninitializedObject),
             BindingFlags.Public | BindingFlags.Static);
 
-        private static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod(
+        static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod(
             nameof(Type.GetTypeFromHandle),
             BindingFlags.Public | BindingFlags.Static);
 
