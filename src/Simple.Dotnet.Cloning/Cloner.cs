@@ -42,7 +42,7 @@ namespace Simple.Dotnet.Cloning
 
         static CloneDelegate CreateDeepCloner()
         {
-            var method = new DynamicMethod($"{Type.FullName}_{nameof(DeepClone)}", Type, new[] { Type }, typeof(Cloner).Module, true);
+            var method = new DynamicMethod($"{Type.FullName}_{nameof(DeepClone)}", Type, new[] { Type }, ClonerModule, true);
 
             method.GetILGenerator().Deep(Type);
             return method.CreateDelegate(typeof(CloneDelegate)) as CloneDelegate;

@@ -53,6 +53,7 @@ namespace Simple.Dotnet.Cloning
             typeof(ReadOnlyMemory<>),
             typeof(ImmutableArray<>),
             typeof(CancellationTokenRegistration),
+            typeof(CancellationTokenRegistration?),
 
             // Classes:
             typeof(string), // immutable

@@ -98,6 +98,7 @@ namespace Simple.Dotnet.Cloning.Tests
             ((object)null).ShallowClone();
         }
 
+        // TODO: interfaces/objects/abstract classes
         [Fact]
         public void ShallowClone_Should_Clone_Known_Classes()
         {

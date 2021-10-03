@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace Simple.Dotnet.Cloning.Generators
 {
-    public static class DeepCloneFieldGenerator
+    internal static class DeepCloneGenerator
     {
         static readonly Type ClonerOpenType = typeof(Cloner<>);
 
