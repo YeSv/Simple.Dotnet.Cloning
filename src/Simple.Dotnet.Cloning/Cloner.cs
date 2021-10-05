@@ -66,16 +66,12 @@ namespace Simple.Dotnet.Cloning
 
         public static object DeepClone(object instance, Type type)
         {
-            if (instance == null) return null;
-
             var (_, deep) = Cache.GetOrAdd(type, Generator);
             return deep(instance);
         }
 
         public static object ShallowClone(object instance, Type type)
         {
-            if (instance == null) return null;
-
             var (shallow, _) = Cache.GetOrAdd(type, Generator);
             return shallow(instance);
         }
