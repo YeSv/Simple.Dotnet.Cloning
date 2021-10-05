@@ -6,8 +6,6 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using System.Collections.Concurrent;
 
-using TypelessFunc = System.Func<object, object>;
-
 namespace Simple.Dotnet.Cloning
 {
     public static class Cloner
@@ -52,14 +50,16 @@ namespace Simple.Dotnet.Cloning
         }
     }
 
-    internal static class TypelessCloner
+    internal static class ObjectCloner
     {
+        internal delegate object CloneDelegate(object instance);
+
         static readonly Type ObjectType = typeof(object);
         static readonly Type OpenClonerType = typeof(Cloner<>);
 
-        static readonly Func<Type, (TypelessFunc Shallow, TypelessFunc Deep)> Generator = t => Generate(t);
+        static readonly Func<Type, (CloneDelegate Shallow, CloneDelegate Deep)> Generator = t => Generate(t);
 
-        static readonly ConcurrentDictionary<Type, (TypelessFunc Shallow, TypelessFunc Deep)> Cache = new ConcurrentDictionary<Type, (TypelessFunc Shallow, TypelessFunc Deep)>()
+        static readonly ConcurrentDictionary<Type, (CloneDelegate Shallow, CloneDelegate Deep)> Cache = new ConcurrentDictionary<Type, (CloneDelegate Shallow, CloneDelegate Deep)>()
         {
             [ObjectType] = (obj => obj, obj => obj) // For object - do nothing both for shallow and deep clone
         }; // TODO: Find other thread safe approach?
@@ -80,7 +80,7 @@ namespace Simple.Dotnet.Cloning
             return shallow(instance);
         }
 
-        static (TypelessFunc Shallow, TypelessFunc Deep) Generate(Type type)
+        static (CloneDelegate Shallow, CloneDelegate Deep) Generate(Type type)
         {
             var cloner = OpenClonerType.MakeGenericType(type);
             return 
@@ -89,10 +89,10 @@ namespace Simple.Dotnet.Cloning
                 CreateLambda(type, cloner.GetMethod(nameof(Cloner.DeepClone), BindingFlags.Public | BindingFlags.Static))
             );
             
-            static TypelessFunc CreateLambda(Type type, MethodInfo info)
+            static CloneDelegate CreateLambda(Type type, MethodInfo info)
             {
                 var parameter = Expression.Parameter(ObjectType);
-                return Expression.Lambda<TypelessFunc>(
+                return Expression.Lambda<CloneDelegate>(
                     Expression.Convert(
                         Expression.Call(
                             info,
