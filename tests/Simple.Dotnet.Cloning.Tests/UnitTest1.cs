@@ -13,7 +13,6 @@ namespace Simple.Dotnet.Cloning.Tests
         public int Value { get; set; }
         public int? NullableInt { get; set; }
         public Guid? NullableGuid { get; set; }
-        public HashSet<int> TestObject { get; set; }
     }
 
     public class UnitTest1
@@ -26,9 +25,21 @@ namespace Simple.Dotnet.Cloning.Tests
             var guid = Guid.NewGuid();
             var clone = guid.DeepClone();
 
-            var test = new Test { Value = 11, NullableInt = 12, NullableGuid = Guid.Empty, TestObject = new HashSet<int> { 1, 2, 3 } };
+            var test = new Test { Value = 11, NullableInt = 12, NullableGuid = Guid.Empty };
             Expression<Func<int, int>> e = i => i;
             var cloned = test.DeepClone();
         }
+
+        /*[Fact]
+        public void Test2()
+        {
+
+            var shallow = TypelessCloner.ShallowClone(new Test { }, typeof(Test));
+            var deep = TypelessCloner.DeepClone(new Test { }, typeof(Test));
+
+
+            var guidShallow = TypelessCloner.ShallowClone(Guid.NewGuid(), typeof(Guid));
+            var guidDeep = TypelessCloner.DeepClone(Guid.NewGuid(), typeof(Guid));
+        }*/
     }
 }
