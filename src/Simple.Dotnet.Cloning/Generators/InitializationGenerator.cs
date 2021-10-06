@@ -19,7 +19,7 @@ namespace Simple.Dotnet.Cloning.Generators
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ILGenerator Init(this ILGenerator generator, Type type)
         {
-            if (type.IsValueType) return Struct(generator, type);
+            if (type.IsValueType) return Default(generator, type);
 
             var ctor = type.GetConstructor(Type.EmptyTypes);
             if (ctor != null) return RefTypeCtor(generator, ctor);
@@ -28,7 +28,7 @@ namespace Simple.Dotnet.Cloning.Generators
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ILGenerator Struct(ILGenerator generator, Type type)
+        public static ILGenerator Default(this ILGenerator generator, Type type)
         {
             generator.Emit(OpCodes.Ldloca_S, (byte)0); // local_0
             generator.Emit(OpCodes.Initobj, type); // default(T)
@@ -37,7 +37,7 @@ namespace Simple.Dotnet.Cloning.Generators
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ILGenerator RefTypeCtor(ILGenerator generator, ConstructorInfo ctor)
+        static ILGenerator RefTypeCtor(this ILGenerator generator, ConstructorInfo ctor)
         {
             generator.Emit(OpCodes.Newobj, ctor); // call new
             generator.Emit(OpCodes.Stloc_0); // Store as local variable 0
@@ -46,7 +46,7 @@ namespace Simple.Dotnet.Cloning.Generators
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ILGenerator RefTypeUninitialized(ILGenerator generator, Type type)
+        static ILGenerator RefTypeUninitialized(this ILGenerator generator, Type type)
         {
             generator.Emit(OpCodes.Ldtoken, type); // typeof()
             generator.Emit(OpCodes.Call, GetTypeFromHandle); // GetTypeFromHandle(handle)
