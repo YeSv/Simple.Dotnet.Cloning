@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Simple.Dotnet.Cloning
 {
-    internal static class SafeToCopyTypes
+    internal static class Types
     {
-        public static HashSet<Type> Types = new HashSet<Type>
+        public static HashSet<Type> SafeToCopy = new HashSet<Type>
         {
             // Common:
             typeof(char),
