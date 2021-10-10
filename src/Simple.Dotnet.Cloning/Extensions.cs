@@ -18,7 +18,7 @@ namespace Simple.Dotnet.Cloning
             if (type.IsPointer) return true;
             if (type.IsPrimitive) return true;
             if (type.IsMarshalByRef) return true;
-            if (SafeToCopyTypes.Types.Contains(type)) return true;
+            if (Types.SafeToCopy.Contains(type)) return true;
 
             // Handle nullables and their inner type
             var nullableInner = Nullable.GetUnderlyingType(type);
@@ -28,7 +28,7 @@ namespace Simple.Dotnet.Cloning
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && SafeToCopyTypes.Types.Contains(openGeneric)) return true;
+                if (openGeneric != null && Types.SafeToCopy.Contains(openGeneric)) return true;
             }
 
             return false;
@@ -36,7 +36,7 @@ namespace Simple.Dotnet.Cloning
 
         public static bool IsSafeToCopyType(this Type type)
         {
-            if (SafeToCopyTypes.Types.Contains(type)) return true;
+            if (Types.SafeToCopy.Contains(type)) return true;
             if (type.IsValueType) return type.IsSafeToCopyValueType();
             
             // Do nothing with marshal by ref
@@ -55,7 +55,7 @@ namespace Simple.Dotnet.Cloning
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && SafeToCopyTypes.Types.Contains(openGeneric)) return true;
+                if (openGeneric != null && Types.SafeToCopy.Contains(openGeneric)) return true;
             }
 
             return false;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simple.Dotnet.Cloning.Cloners;
+using System;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -7,7 +8,7 @@ namespace Simple.Dotnet.Cloning.Generators
 {
     internal static class DeepCloneGenerator
     {
-        static readonly Type ClonerOpenType = typeof(Cloner<>);
+        static readonly Type ClonerOpenType = typeof(RootCloner<>);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ILGenerator DeepCloneField(this ILGenerator generator, Type owner, FieldInfo field)

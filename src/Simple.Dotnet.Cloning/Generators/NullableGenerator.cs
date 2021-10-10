@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simple.Dotnet.Cloning.Cloners;
+using System;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
@@ -6,7 +7,7 @@ namespace Simple.Dotnet.Cloning.Generators
 {
     internal static class NullableGenerator
     {
-        static readonly Type ClonerOpenType = typeof(Cloner<>);
+        static readonly Type ClonerOpenType = typeof(RootCloner<>);
         static readonly Type NullableOpenType = typeof(Nullable<>);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
