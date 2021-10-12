@@ -22,9 +22,9 @@ namespace Simple.Dotnet.Cloning.Generators
                 { IsInterface: true } => generator.CopyInterface(type), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(),  // Copy object at runtime
-                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopyOneDimArray(type), // Copy one dimention array
+                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopySingleDimArray(type), // Copy single dimention array
+                { IsArray: true } => generator.CopyMultiDimArray(type), // Copy multi dimention array
                 _ => generator.CopyReferenceType(type, FieldsLazy(type)) // Copy reference type
-                //  TODO: { IsArray: true } => generator.CopyReferenceType(type, Array.Empty<FieldInfo>()),
             };
 
             generator.Emit(OpCodes.Ldloc_0); // Load clone
@@ -45,8 +45,8 @@ namespace Simple.Dotnet.Cloning.Generators
                 { IsInterface: true } => generator.CopyInterface(type, false), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type, false), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(false), // Copy object at runtime
-                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopyOneDimArray(type, false), // Copy one dimention array
-                // If type us non-safe to copy reference type - use memberwise clone
+                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopySingleDimArray(type, false), // Copy single dimention array
+                { IsArray: true } => generator.CopyMultiDimArray(type, false), // Copy multi dimention array
                 _ => generator.ShallowCopyReferenceType(type)
             };
 
