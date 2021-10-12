@@ -5,14 +5,14 @@
     using System.Reflection;
     using System.Reflection.Emit;
 
-    internal static class OneDimArrayGenerator
+    internal static class SingleDimArrayGenerator
     {
         static readonly Type ObjectType = typeof(object);
-        static readonly Type ClonerType = typeof(OneDimArrayCloner);
-        static readonly MethodInfo DeepClone = ClonerType.GetMethod(nameof(OneDimArrayCloner.DeepClone), BindingFlags.Static | BindingFlags.Public);
-        static readonly MethodInfo ShallowClone = ClonerType.GetMethod(nameof(OneDimArrayCloner.ShallowClone), BindingFlags.Static | BindingFlags.Public);
+        static readonly Type ClonerType = typeof(SingleDimArrayCloner);
+        static readonly MethodInfo DeepClone = ClonerType.GetMethod(nameof(SingleDimArrayCloner.DeepClone), BindingFlags.Static | BindingFlags.Public);
+        static readonly MethodInfo ShallowClone = ClonerType.GetMethod(nameof(SingleDimArrayCloner.ShallowClone), BindingFlags.Static | BindingFlags.Public);
 
-        public static ILGenerator CopyOneDimArray(this ILGenerator generator, Type type, bool deep = true)
+        public static ILGenerator CopySingleDimArray(this ILGenerator generator, Type type, bool deep = true)
         {
             var nullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();

@@ -2,7 +2,7 @@
 
 namespace Simple.Dotnet.Cloning.Cloners
 {
-    internal static class OneDimArrayCloner
+    internal static class SingleDimArrayCloner
     {
         public static T[] ShallowClone<T>(T[] array)
         {
