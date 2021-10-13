@@ -22,8 +22,7 @@ namespace Simple.Dotnet.Cloning.Generators
                 { IsInterface: true } => generator.CopyInterface(type), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(),  // Copy object at runtime
-                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopySingleDimArray(type), // Copy single dimention array
-                { IsArray: true } => generator.CopyMultiDimArray(type), // Copy multi dimention array
+                { IsArray: true } => generator.CopyArray(type), // Copy array
                 _ => generator.CopyReferenceType(type, FieldsLazy(type)) // Copy reference type
             };
 
@@ -45,8 +44,7 @@ namespace Simple.Dotnet.Cloning.Generators
                 { IsInterface: true } => generator.CopyInterface(type, false), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type, false), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(false), // Copy object at runtime
-                { IsArray: true } when type.GetArrayRank() == 1 => generator.CopySingleDimArray(type, false), // Copy single dimention array
-                { IsArray: true } => generator.CopyMultiDimArray(type, false), // Copy multi dimention array
+                { IsArray: true } => generator.CopyArray(type, false), // Copy array
                 _ => generator.ShallowCopyReferenceType(type)
             };
 

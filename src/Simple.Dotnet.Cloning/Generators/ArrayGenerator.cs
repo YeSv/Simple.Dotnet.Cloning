@@ -6,15 +6,16 @@ using System.Runtime.CompilerServices;
 
 namespace Simple.Dotnet.Cloning.Generators
 {
-    internal static class MultiDimArrayGenerator
+    internal static class ArrayGenerator
     {
         static readonly Type ArrayType = typeof(Array);
-        static readonly Type TwoDimClonerType = typeof(MultiDimArrayCloner.TwoDim);
-        static readonly Type ThreeDimClonerType = typeof(MultiDimArrayCloner.ThreeDim);
-        static readonly Type FourDimClonerType = typeof(MultiDimArrayCloner.FourDim);
+        static readonly Type SingleDimClonerType = typeof(ArrayCloner.SingleDim);
+        static readonly Type TwoDimClonerType = typeof(ArrayCloner.TwoDim);
+        static readonly Type ThreeDimClonerType = typeof(ArrayCloner.ThreeDim);
+        static readonly Type FourDimClonerType = typeof(ArrayCloner.FourDim);
         static readonly MethodInfo MemberwiseCloneMethod = ArrayType.GetMethod(nameof(MemberwiseClone), BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static ILGenerator CopyMultiDimArray(this ILGenerator generator, Type type, bool deep = true)
+        public static ILGenerator CopyArray(this ILGenerator generator, Type type, bool deep = true)
         {
             var nullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();
@@ -29,6 +30,7 @@ namespace Simple.Dotnet.Cloning.Generators
             var useShallow = !deep || elementType.IsSafeToCopyType(); // Check whether it's possible to use shallow clone 
             _ = type.GetArrayRank() switch // Decide which method to use
             {
+                1 => useShallow ? ShallowClone(generator, elementType, SingleDimClonerType) : DeepClone(generator, elementType, SingleDimClonerType),
                 2 => useShallow ? ShallowClone(generator, elementType, TwoDimClonerType) : DeepClone(generator, elementType, TwoDimClonerType),
                 3 => useShallow ? ShallowClone(generator, elementType, ThreeDimClonerType) : DeepClone(generator, elementType, ThreeDimClonerType),
                 4 => useShallow ? ShallowClone(generator, elementType, FourDimClonerType) : DeepClone(generator, elementType, FourDimClonerType),

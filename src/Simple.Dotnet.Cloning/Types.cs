@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading;
@@ -52,6 +56,7 @@ namespace Simple.Dotnet.Cloning
             typeof(Memory<>),
             typeof(ReadOnlyMemory<>),
             typeof(ImmutableArray<>),
+            typeof(ArraySegment<>),
             typeof(CancellationTokenRegistration),
             typeof(CancellationTokenRegistration?),
 
@@ -70,6 +75,24 @@ namespace Simple.Dotnet.Cloning
             typeof(Lazy<>),
             typeof(AsyncLocal<>),
             typeof(ThreadLocal<>),
+            typeof(AutoResetEvent),
+            typeof(Barrier),
+            typeof(CountdownEvent),
+            typeof(ManualResetEvent),
+            typeof(ManualResetEventSlim),
+            typeof(Mutex),
+            typeof(Overlapped),
+            typeof(ReaderWriterLock),
+            typeof(ReaderWriterLockSlim),
+            typeof(Semaphore),
+            typeof(SemaphoreSlim),
+            typeof(WaitHandle),
+            typeof(LockCookie),
+            typeof(LockCookie?),
+            typeof(SpinLock),
+            typeof(SpinLock?),
+            typeof(SpinWait),
+            typeof(SpinWait?),
 
             // Reflection
             typeof(Assembly),
@@ -94,6 +117,59 @@ namespace Simple.Dotnet.Cloning
             typeof(ImmutableQueue<>),
             typeof(ImmutableList<>),
             typeof(ImmutableHashSet<>),
+        };
+
+        public static HashSet<Type> Collections = new HashSet<Type>
+        {
+            // System.Collections
+            typeof(ArrayList),
+            typeof(BitArray),
+            typeof(Hashtable),
+            typeof(Queue),
+            typeof(SortedList),
+            typeof(Stack),
+
+            // ObjectModel
+            typeof(Collection<>),
+            typeof(KeyedCollection<,>),
+            typeof(ObservableCollection<>),
+            typeof(ReadOnlyCollection<>),
+            typeof(ReadOnlyDictionary<,>.KeyCollection),
+            typeof(ReadOnlyDictionary<,>.ValueCollection),
+            typeof(ReadOnlyDictionary<,>),
+            typeof(ReadOnlyObservableCollection<>),
+
+            // Specialized
+            typeof(HybridDictionary),
+            typeof(ListDictionary),
+            typeof(NameObjectCollectionBase.KeysCollection),
+            typeof(NameValueCollection),
+            typeof(OrderedDictionary),
+            typeof(StringCollection),
+            typeof(StringDictionary),
+            typeof(BitVector32),
+            typeof(BitVector32?),
+
+            // Concurrent
+            typeof(BlockingCollection<>),
+            typeof(ConcurrentBag<>),
+            typeof(ConcurrentDictionary<,>),
+            typeof(ConcurrentStack<>),
+
+            // Generic
+            typeof(Dictionary<,>.KeyCollection),
+            typeof(Dictionary<,>.ValueCollection),
+            typeof(Dictionary<,>),
+            typeof(HashSet<>),
+            typeof(LinkedList<>),
+            typeof(List<>),
+            typeof(Queue<>),
+            typeof(SortedDictionary<,>.KeyCollection),
+            typeof(SortedDictionary<,>.ValueCollection),
+            typeof(SortedDictionary<,>),
+            typeof(SortedSet<>),
+            typeof(SortedList<,>),
+            typeof(Stack<>)
         };
     }
 }
