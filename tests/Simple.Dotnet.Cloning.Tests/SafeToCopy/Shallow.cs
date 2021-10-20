@@ -11,6 +11,13 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
 {
     public sealed class Shallow
     {
+        sealed class Wrapper<T>
+        {
+            public T Value;
+
+            public Wrapper(T instance) => Value = instance;
+        }
+
         [Fact]
         public void ShallowClone_Should_Return_Same_Ref_Instance()
         {
@@ -61,6 +68,9 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
             {
                 (instance.ShallowClone() == instance).Should().BeTrue();
                 (((T)null).ShallowClone() == null).Should().BeTrue();
+
+                var wrapper = new Wrapper<T>(instance);
+                (wrapper.ShallowClone().Value == wrapper.Value).Should().BeTrue();
             }
             finally
             {
