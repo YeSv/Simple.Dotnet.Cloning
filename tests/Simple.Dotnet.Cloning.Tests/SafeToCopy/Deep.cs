@@ -71,7 +71,7 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
                 (((T)null).DeepClone() == null).Should().BeTrue();
 
                 var wrapper = new Wrapper<T>(instance);
-                (wrapper.ShallowClone().Value == wrapper.Value).Should().BeTrue();
+                (wrapper.DeepClone().Value == wrapper.Value).Should().BeTrue();
             }
             finally
             {
