@@ -12,12 +12,7 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
 {
     public class Deep
     {
-        sealed class Wrapper<T>
-        {
-            public T Value;
-
-            public Wrapper(T instance) => Value = instance;
-        }
+        
 
         [Fact]
         public void ShallowClone_Should_Return_Same_Ref_Instance()
@@ -72,6 +67,15 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
 
                 var wrapper = new Wrapper<T>(instance);
                 (wrapper.DeepClone().Value == wrapper.Value).Should().BeTrue();
+
+                var structWrapper = new WrapperStruct<T>(instance);
+                (structWrapper.DeepClone().Value == structWrapper.Value).Should().BeTrue();
+
+                var recordWrapper = new WrapperRecord<T>(instance);
+                (recordWrapper.DeepClone().Value == recordWrapper.Value).Should().BeTrue();
+
+                var readonlyWrapper = new WrapperReadonly<T>(instance);
+                (readonlyWrapper.DeepClone().Value == readonlyWrapper.Value).Should().BeTrue();
             }
             finally
             {
