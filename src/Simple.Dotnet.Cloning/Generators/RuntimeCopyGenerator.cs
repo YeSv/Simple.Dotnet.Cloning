@@ -60,6 +60,7 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Emit(OpCodes.Call, deep ? DeepCloneMethod : ShallowCloneMethod); // Call DeepClone/ShallowClone
             generator.Emit(OpCodes.Castclass, type); // Cast back to required abstract class
             generator.Emit(OpCodes.Stloc_0); // store in local
+            generator.Emit(OpCodes.Br_S, exitLabel);
 
             // Null:
             generator.MarkLabel(nullLabel);
@@ -91,6 +92,7 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Emit(OpCodes.Call, deep ? DeepCloneMethod : ShallowCloneMethod); // Call DeepClone
             generator.Emit(OpCodes.Castclass, type); // Cast back to required abstract class
             generator.Emit(OpCodes.Stloc_0); // store in local
+            generator.Emit(OpCodes.Br_S, exitLabel);
 
             // Null:
             generator.MarkLabel(nullLabel);
