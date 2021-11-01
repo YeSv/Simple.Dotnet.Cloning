@@ -38,7 +38,7 @@ namespace Simple.Dotnet.Cloning
         {
             if (Types.SafeToCopy.Contains(type)) return true;
             if (type.IsValueType) return type.IsSafeToCopyValueType();
-            
+
             // Do nothing with marshal by ref
             if (type.IsMarshalByRef) return true;
 
@@ -56,6 +56,18 @@ namespace Simple.Dotnet.Cloning
             {
                 var openGeneric = type.GetGenericTypeDefinition();
                 if (openGeneric != null && Types.SafeToCopy.Contains(openGeneric)) return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsRecurringType(this Type type)
+        {
+            if (Types.RecurringTypes.Contains(type)) return true;
+            if (type.IsGenericType)
+            {
+                var openGeneric = type.GetGenericTypeDefinition();
+                if (openGeneric != null && Types.RecurringTypes.Contains(openGeneric)) return true;
             }
 
             return false;
