@@ -118,6 +118,15 @@ namespace Simple.Dotnet.Cloning
             typeof(ImmutableQueue<>),
             typeof(ImmutableList<>),
             typeof(ImmutableHashSet<>),
+
+            // Collections
+            typeof(LinkedListNode<>) // Cloning will break collection
+        };
+
+        // TODO: Add support automatically
+        public static HashSet<Type> RecurringTypes = new HashSet<Type>
+        {
+            typeof(LinkedList<>)
         };
     }
 }
