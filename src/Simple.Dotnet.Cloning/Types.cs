@@ -120,13 +120,18 @@ namespace Simple.Dotnet.Cloning
             typeof(ImmutableHashSet<>),
 
             // Collections
-            typeof(LinkedListNode<>) // Cloning will break collection
+            typeof(LinkedListNode<>), // Cloning will break collection
+            typeof(Dictionary<,>.ValueCollection),
+            typeof(Dictionary<,>.KeyCollection),
+            typeof(SortedDictionary<,>.ValueCollection),
+            typeof(SortedDictionary<,>.KeyCollection)
         };
 
         // TODO: Add support automatically
         public static HashSet<Type> RecurringTypes = new HashSet<Type>
         {
-            typeof(LinkedList<>)
+            typeof(LinkedList<>), // LinkedListNode contains LinkedList, Next, Previous fields
+            typeof(SortedDictionary<,>) // Contains Value and Key collection fields
         };
     }
 }
