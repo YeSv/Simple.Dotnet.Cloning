@@ -10,10 +10,12 @@ namespace Simple.Dotnet.Cloning.Generators
     {
         static readonly Type Cloner = typeof(RecurringTypesCloner);
         static readonly MethodInfo LinkedListOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneLinkedList), BindingFlags.Static | BindingFlags.Public);
+        static readonly MethodInfo SortedDictionaryOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneSortedDictionary), BindingFlags.Static | BindingFlags.Public);
 
         static readonly Dictionary<Type, Func<Type[], MethodInfo>> Cloners = new Dictionary<Type, Func<Type[], MethodInfo>>
         {
-            [typeof(LinkedList<>)] = t => LinkedListOpenedMethod.MakeGenericMethod(t)
+            [typeof(LinkedList<>)] = t => LinkedListOpenedMethod.MakeGenericMethod(t),
+            [typeof(SortedDictionary<,>)] = t => SortedDictionaryOpenedMethod.MakeGenericMethod(t)
         };
 
         public static ILGenerator CopyRecurringType(this ILGenerator generator, Type type)
