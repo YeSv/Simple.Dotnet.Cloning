@@ -16,6 +16,17 @@ namespace Simple.Dotnet.Cloning.Cloners
             return clone;
         }
 
+        public static Dictionary<TKey, TValue> CloneDictionary<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+        {
+            if (dictionary == null) return null;
+            if (dictionary.Count == 0) return new();
+
+            var clone = new Dictionary<TKey, TValue>(dictionary.Comparer);
+            foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key), RootCloner<TValue>.DeepClone(element.Value));
+
+            return clone;
+        }
+
         public static SortedDictionary<TKey, TValue> CloneSortedDictionary<TKey, TValue>(SortedDictionary<TKey, TValue> dictionary)
         {
             if (dictionary == null) return null;

@@ -42,12 +42,12 @@ namespace Simple.Dotnet.Cloning.Generators
             {
                 // If type is a value type or safe to copy reference type -> we can just load it as a shallow clone
                 { } when type.IsValueType || type.IsSafeToCopyType() => generator.CopyByValue(),
-                { } when type.IsRecurringType() => generator.ShallowCopyReferenceType(type), // Recurring reference types are cloned as other reference types
+                { } when type.IsRecurringType() => generator.ShallowCopyReferenceType(type, FieldsLazy(type)), // Recurring reference types are cloned as other reference types
                 { IsInterface: true } => generator.CopyInterface(type, false), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type, false), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(false), // Copy object at runtime
                 { IsArray: true } => generator.CopyArray(type, false), // Copy array
-                _ => generator.ShallowCopyReferenceType(type)
+                _ => generator.ShallowCopyReferenceType(type, FieldsLazy(type))
             };
 
             generator.Emit(OpCodes.Ldloc_0); // Load clone

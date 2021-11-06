@@ -20,7 +20,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => (object)null).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => (object)null).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => i.ToString(), (f, s) => f == s).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new object(), (f, s) => f == s).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new object(), (f, s) => f != s).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new FourDimDeep(), (f, s) => f != s).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => Guid.NewGuid()).Should().BeTrue();
         }
@@ -31,33 +31,33 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<Guid[,,,]>(Generate<Guid>()), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue(); // Guid
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<object[,,,]>(Generate<object>()), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<Guid[,,,]>(Generate<Guid>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<object[,,,]>(Generate<object>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<object[,,,]>(Generate<object>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<Guid[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => Guid.NewGuid())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new Wrapper<FourDimDeep[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new FourDimDeep())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<Guid[,,,]>(Generate<Guid>()), (f, s) => f == s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue(); // Guid
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<object[,,,]>(Generate<object>()), (f, s) => f == s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<Guid[,,,]>(Generate<Guid>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<object[,,,]>(Generate<object>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<object[,,,]>(Generate<object>(0)), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<Guid[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => Guid.NewGuid())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperRecord<FourDimDeep[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new FourDimDeep())), (f, s) => f != s && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<Guid[,,,]>(Generate<Guid>()), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue(); // Guid
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<object[,,,]>(Generate<object>()), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<Guid[,,,]>(Generate<Guid>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<object[,,,]>(Generate<object>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<object[,,,]>(Generate<object>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<Guid[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => Guid.NewGuid())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperStruct<FourDimDeep[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new FourDimDeep())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<Guid[,,,]>(Generate<Guid>()), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue(); // Guid
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<object[,,,]>(Generate<object>()), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<Guid[,,,]>(Generate<Guid>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<object[,,,]>(Generate<object>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<object[,,,]>(Generate<object>(0)), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<Guid[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => Guid.NewGuid())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<object[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new object())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(3, 3, 3, 3, (i, j, k, z) => new WrapperReadonly<FourDimDeep[,,,]>(Generate(3, 3, 3, 3, (i, j, k, z) => new FourDimDeep())), (f, s) => CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
         }

@@ -63,11 +63,11 @@ namespace Simple.Dotnet.Cloning
 
         public static bool IsRecurringType(this Type type)
         {
-            if (Types.RecurringTypes.Contains(type)) return true;
+            if (Types.Recurring.Contains(type)) return true;
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && Types.RecurringTypes.Contains(openGeneric)) return true;
+                if (openGeneric != null && Types.Recurring.Contains(openGeneric)) return true;
             }
 
             return false;

@@ -16,7 +16,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 
         static readonly ConcurrentDictionary<Type, (CloneDelegate Shallow, CloneDelegate Deep)> Cache = new ConcurrentDictionary<Type, (CloneDelegate Shallow, CloneDelegate Deep)>()
         {
-            [ObjectType] = (obj => obj, obj => obj) // For object - do nothing both for shallow and deep clone
+            [ObjectType] = (obj => new(), obj => new()) // For object - allocate new one
         }; // TODO: Find other thread safe approach?
 
         public static object DeepClone(object instance, Type type)

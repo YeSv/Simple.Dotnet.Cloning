@@ -33,8 +33,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
     [MemoryDiagnoser]
     public class SmallStructCollectionsClone
     {
-        SmallStruct _instance = new(int.MaxValue, long.MaxValue, Guid.NewGuid());
-
         Dictionary<string, SmallStruct> _dictionary;
         List<SmallStruct> _list;
         SmallStruct[] _array;
@@ -46,10 +44,10 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => _instance));
-            WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => _instance).ToHashSet());
-            WarmupFor(_array = Enumerable.Range(0, Size).Select(i => _instance).ToArray());
-            WarmupFor(_list = Enumerable.Range(0, Size).Select(i => _instance).ToList());
+            WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => new SmallStruct(int.MaxValue, long.MaxValue, Guid.NewGuid())));
+            WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => new SmallStruct(int.MaxValue, long.MaxValue, Guid.NewGuid())).ToHashSet());
+            WarmupFor(_array = Enumerable.Range(0, Size).Select(i => new SmallStruct(int.MaxValue, long.MaxValue, Guid.NewGuid())).ToArray());
+            WarmupFor(_list = Enumerable.Range(0, Size).Select(i => new SmallStruct(int.MaxValue, long.MaxValue, Guid.NewGuid())).ToList());
         }
 
         #region Dictionary

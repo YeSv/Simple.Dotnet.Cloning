@@ -7,12 +7,12 @@ namespace Simple.Dotnet.Cloning.Tests.Object
     public class RealObjectTests
     {
         [Fact]
-        public void Object_Should_Be_Just_Returned_On_Cloning()
+        public void Object_Should_Be_Just_Returned_New_On_Cloning()
         {
             var obj = new object();
 
-            obj.ShallowClone().Should().Be(obj);
-            obj.DeepClone().Should().Be(obj);
+            obj.ShallowClone().Should().NotBe(obj);
+            obj.DeepClone().Should().NotBe(obj);
 
 
             ((object)null).ShallowClone().Should().BeNull();
@@ -20,7 +20,7 @@ namespace Simple.Dotnet.Cloning.Tests.Object
         }
 
         [Fact]
-        public void Object_Should_Be_Just_Returned_On_Cloning_Wrappers()
+        public void Object_Should_Be_Just_Returned_New_On_Cloning_Wrappers()
         {
             var obj = new object();
             var wrapper = new Wrapper<object>(obj);
@@ -33,10 +33,10 @@ namespace Simple.Dotnet.Cloning.Tests.Object
             wrapperReadonly.ShallowClone().Value.Should().Be(wrapperReadonly.Value);
             wrapperStruct.ShallowClone().Value.Should().Be(wrapperStruct.Value);
 
-            wrapper.DeepClone().Value.Should().Be(wrapper.Value);
-            wrapperRec.DeepClone().Value.Should().Be(wrapperRec.Value);
-            wrapperReadonly.DeepClone().Value.Should().Be(wrapperReadonly.Value);
-            wrapperStruct.DeepClone().Value.Should().Be(wrapperStruct.Value);
+            wrapper.DeepClone().Value.Should().NotBe(wrapper.Value);
+            wrapperRec.DeepClone().Value.Should().NotBe(wrapperRec.Value);
+            wrapperReadonly.DeepClone().Value.Should().NotBe(wrapperReadonly.Value);
+            wrapperStruct.DeepClone().Value.Should().NotBe(wrapperStruct.Value);
         }
     }
 }

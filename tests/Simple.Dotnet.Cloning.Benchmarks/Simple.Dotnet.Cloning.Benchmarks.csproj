@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="BenchmarkDotNet" Version="0.13.1" />
+    <PackageReference Include="Bogus" Version="33.1.1" />
     <PackageReference Include="DeepCloner" Version="0.10.3" />
     <PackageReference Include="MessagePack" Version="2.3.85" />
   </ItemGroup>
