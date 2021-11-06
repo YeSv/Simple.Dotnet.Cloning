@@ -20,7 +20,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
 
             ShouldBeSame(10, i => (object)null).Should().BeTrue();
             ShouldBeSame(10, i => i.ToString(), (f,s) => f == s).Should().BeTrue(); // strings
-            ShouldBeSame(10, i => new object(), (f,s) => f == s).Should().BeTrue(); // objects
+            ShouldBeSame(10, i => new object(), (f,s) => f != s).Should().BeTrue(); // objects
             ShouldBeSame(10, i => new SingleDimDeep(), (f, s) => f != s).Should().BeTrue();
             ShouldBeSame(10, i => Guid.NewGuid()).Should().BeTrue();
         }
@@ -33,7 +33,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(10, i => new Wrapper<Guid[]>(Generate<Guid>(0)), (f, s) => f != s && f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new Wrapper<object[]>(Generate<object>(0)), (f, s) => f != s && f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new Wrapper<Guid[]>(Generate(10, i => Guid.NewGuid())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(10, i => new Wrapper<object[]>(Generate(10, i => new object())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(10, i => new Wrapper<object[]>(Generate(10, i => new object())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(10, i => new Wrapper<SingleDimDeep[]>(Generate(10, i => new SingleDimDeep())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(10, i => new WrapperRecord<Guid[]>(Generate<Guid>()), (f, s) => f == s && f.Value == s.Value).Should().BeTrue(); // nulls
@@ -41,7 +41,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(10, i => new WrapperRecord<Guid[]>(Generate<Guid>(0)), (f, s) => f == s && f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperRecord<object[]>(Generate<object>(0)), (f, s) => f == s && f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperRecord<Guid[]>(Generate(10, i => Guid.NewGuid())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(10, i => new WrapperRecord<object[]>(Generate(10, i => new object())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(10, i => new WrapperRecord<object[]>(Generate(10, i => new object())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(10, i => new WrapperRecord<SingleDimDeep[]>(Generate(10, i => new SingleDimDeep())), (f, s) => f != s && f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(10, i => new WrapperReadonly<Guid[]>(Generate<Guid>()), (f, s) => f.Value == s.Value).Should().BeTrue(); // nulls
@@ -49,7 +49,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(10, i => new WrapperReadonly<Guid[]>(Generate<Guid>(0)), (f, s) => f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperReadonly<object[]>(Generate<object>(0)), (f, s) => f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperReadonly<Guid[]>(Generate(10, i => Guid.NewGuid())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(10, i => new WrapperReadonly<object[]>(Generate(10, i => new object())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(10, i => new WrapperReadonly<object[]>(Generate(10, i => new object())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(10, i => new WrapperReadonly<SingleDimDeep[]>(Generate(10, i => new SingleDimDeep())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
 
             ShouldBeSame(10, i => new WrapperStruct<Guid[]>(Generate<Guid>()), (f, s) => f.Value == s.Value).Should().BeTrue(); // nulls
@@ -57,7 +57,7 @@ namespace Simple.Dotnet.Cloning.Tests.Arrays
             ShouldBeSame(10, i => new WrapperStruct<Guid[]>(Generate<Guid>(0)), (f, s) => f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperStruct<object[]>(Generate<object>(0)), (f, s) => f.Value == s.Value).Should().BeTrue(); // array.Empty
             ShouldBeSame(10, i => new WrapperStruct<Guid[]>(Generate(10, i => Guid.NewGuid())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
-            ShouldBeSame(10, i => new WrapperStruct<object[]>(Generate(10, i => new object())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 == e2)).Should().BeTrue();
+            ShouldBeSame(10, i => new WrapperStruct<object[]>(Generate(10, i => new object())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
             ShouldBeSame(10, i => new WrapperStruct<SingleDimDeep[]>(Generate(10, i => new SingleDimDeep())), (f, s) => f.Value != s.Value && CompareAll(f.Value, s.Value, (e1, e2) => e1 != e2)).Should().BeTrue();
         }
 

@@ -9,12 +9,14 @@ namespace Simple.Dotnet.Cloning.Generators
     internal static class RecurringTypesGenerator
     {
         static readonly Type Cloner = typeof(RecurringTypesCloner);
-        static readonly MethodInfo LinkedListOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneLinkedList), BindingFlags.Static | BindingFlags.Public);
+        static readonly MethodInfo LinkedListOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneLinkedList), BindingFlags.Static | BindingFlags.Public); 
+        static readonly MethodInfo DictionaryOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneDictionary), BindingFlags.Static | BindingFlags.Public);
         static readonly MethodInfo SortedDictionaryOpenedMethod = Cloner.GetMethod(nameof(RecurringTypesCloner.CloneSortedDictionary), BindingFlags.Static | BindingFlags.Public);
 
         static readonly Dictionary<Type, Func<Type[], MethodInfo>> Cloners = new Dictionary<Type, Func<Type[], MethodInfo>>
         {
             [typeof(LinkedList<>)] = t => LinkedListOpenedMethod.MakeGenericMethod(t),
+            [typeof(Dictionary<,>)] = t => DictionaryOpenedMethod.MakeGenericMethod(t),
             [typeof(SortedDictionary<,>)] = t => SortedDictionaryOpenedMethod.MakeGenericMethod(t)
         };
 

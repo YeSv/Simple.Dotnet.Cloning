@@ -26,7 +26,7 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         [Fact]
         public void Queue_DeepClone_Should_Have_Cloned_Values()
         {
-            ShouldBeSame(10, i => new object(), (f, s) => f == s, true).Should().BeTrue();
+            ShouldBeSame(10, i => new object(), (f, s) => f != s, true).Should().BeTrue();
             ShouldBeSame(10, i => i.ToString(), (f, s) => f == s, true).Should().BeTrue();
             ShouldBeSame(10, i => Guid.NewGuid(), (f, s) => f == s, true).Should().BeTrue();
             ShouldBeSame(10, i => new QueueTests(), (f, s) => f != s, true).Should().BeTrue();

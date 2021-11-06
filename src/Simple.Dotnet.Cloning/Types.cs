@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -124,13 +125,32 @@ namespace Simple.Dotnet.Cloning
             typeof(Dictionary<,>.ValueCollection),
             typeof(Dictionary<,>.KeyCollection),
             typeof(SortedDictionary<,>.ValueCollection),
-            typeof(SortedDictionary<,>.KeyCollection)
+            typeof(SortedDictionary<,>.KeyCollection),
+
+            // Serialization
+            typeof(SerializationInfo),
+            typeof(SerializationBinder),
+            typeof(SerializationObjectManager),
+            typeof(SerializationInfoEnumerator),
+            typeof(XmlObjectSerializer),
+            typeof(XmlSerializableServices),
+
+            // Interfaces
+            typeof(IComparer<>),
+            typeof(ICustomAttributeProvider),
+            typeof(IEqualityComparer<>),
+            typeof(IEquatable<>),
+            typeof(IFormatter),
+            typeof(IFormatterConverter),
+            typeof(IFormatProvider),
+            typeof(IServiceProvider),
         };
 
         // TODO: Add support automatically
-        public static HashSet<Type> RecurringTypes = new HashSet<Type>
+        public static HashSet<Type> Recurring = new HashSet<Type>
         {
             typeof(LinkedList<>), // LinkedListNode contains LinkedList, Next, Previous fields
+            typeof(Dictionary<,>), // Contains Value and Key collection fields
             typeof(SortedDictionary<,>) // Contains Value and Key collection fields
         };
     }

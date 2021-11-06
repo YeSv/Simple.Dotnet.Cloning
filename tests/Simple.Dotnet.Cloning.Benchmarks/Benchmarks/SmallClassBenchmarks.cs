@@ -33,8 +33,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
     [MemoryDiagnoser]
     public class SmallClassCollectionsClone
     {
-        SmallClass _instance = new() { Value1 = int.MaxValue, Value2 = long.MaxValue, Value3 = Guid.NewGuid() };
-
         Dictionary<string, SmallClass> _dictionary;
         List<SmallClass> _list;
         SmallClass[] _array;
@@ -46,10 +44,10 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => _instance));
-            WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => _instance).ToHashSet());
-            WarmupFor(_array = Enumerable.Range(0, Size).Select(i => _instance).ToArray());
-            WarmupFor(_list = Enumerable.Range(0, Size).Select(i => _instance).ToList());
+            WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => SmallClassGenerator.Generate()));
+            WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => SmallClassGenerator.Generate()).ToHashSet());
+            WarmupFor(_array = Enumerable.Range(0, Size).Select(i => SmallClassGenerator.Generate()).ToArray());
+            WarmupFor(_list = Enumerable.Range(0, Size).Select(i => SmallClassGenerator.Generate()).ToList());
         }
 
         #region Dictionary
@@ -108,8 +106,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         {
             AutoMapperCloner.DeepClone(instance);
             ForceCloner.DeepClone(instance);
-            JsonCloner.DeepClone(instance);
-            MessagePackCloner.DeepClone(instance);
             SimpleCloner.DeepClone(instance);
         }
     }
