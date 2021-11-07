@@ -11,7 +11,7 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
     public class Extensions
     {
         [Fact]
-        public void Types_Should_Be_Safe_To_Copy() => Types.SafeToCopy.All(t => t.IsSafeToCopyType()).Should().BeTrue();
+        public void Types_Should_Be_Safe_To_Copy() => CloningTypes.SafeToCopy.All(t => t.IsSafeToCopy()).Should().BeTrue();
 
         [Fact]
         public void Delegates_Should_Be_Safe_To_Copy()
@@ -60,9 +60,9 @@ namespace Simple.Dotnet.Cloning.Tests.SafeToCopy
         }
 
         [Fact]
-        public void Object_Should_Not_Be_Safe_To_Copy() => typeof(object).IsSafeToCopyType().Should().BeFalse();
+        public void Object_Should_Not_Be_Safe_To_Copy() => typeof(object).IsSafeToCopy().Should().BeFalse();
 
-        static void SafeToCopy<T>() => typeof(T).IsSafeToCopyType().Should().BeTrue();
+        static void SafeToCopy<T>() => typeof(T).IsSafeToCopy().Should().BeTrue();
 
     }
 }

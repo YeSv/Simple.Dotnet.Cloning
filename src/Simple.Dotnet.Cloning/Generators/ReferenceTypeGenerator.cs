@@ -24,7 +24,7 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Init(type); // Init clone
             
             // If all fields are safe to copy - we can just use copy fields as is in other case - copy fields value by value
-            _ = fields.All(f => f.FieldType.IsSafeToCopyType()) ? generator.ShallowCopyFields(type, fields) : generator.DeepCopyFields(type, fields);
+            _ = fields.All(f => f.FieldType.IsSafeToCopy()) ? generator.ShallowCopyFields(type, fields) : generator.DeepCopyFields(type, fields);
             generator.Emit(OpCodes.Br, exitLabel); // Go to exit :)
 
             generator.MarkLabel(exitLabel);

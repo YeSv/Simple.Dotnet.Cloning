@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -7,10 +8,11 @@ using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using static Simple.Dotnet.Cloning.Generators.CustomTypesGenerator;
 
 namespace Simple.Dotnet.Cloning
 {
-    internal static class Types
+    public static class CloningTypes
     {
         public static HashSet<Type> SafeToCopy = new HashSet<Type>
         {
@@ -95,6 +97,9 @@ namespace Simple.Dotnet.Cloning
             typeof(ConcurrentDictionary<,>),
             typeof(ConcurrentQueue<>),
             typeof(ConcurrentStack<>),
+            typeof(WaitHandle),
+            typeof(RegisteredWaitHandle),
+            typeof(EventWaitHandle),
 
             // Reflection
             typeof(Assembly),
@@ -136,6 +141,7 @@ namespace Simple.Dotnet.Cloning
             typeof(XmlSerializableServices),
 
             // Interfaces
+            typeof(IBufferWriter<>),
             typeof(IComparer<>),
             typeof(ICustomAttributeProvider),
             typeof(IEqualityComparer<>),
@@ -146,12 +152,11 @@ namespace Simple.Dotnet.Cloning
             typeof(IServiceProvider),
         };
 
-        // TODO: Add support automatically
-        public static HashSet<Type> Recurring = new HashSet<Type>
+        public static readonly Dictionary<Type, Func<Type[], MethodInfo>> Custom = new Dictionary<Type, Func<Type[], MethodInfo>>
         {
-            typeof(LinkedList<>), // LinkedListNode contains LinkedList, Next, Previous fields
-            typeof(Dictionary<,>), // Contains Value and Key collection fields
-            typeof(SortedDictionary<,>) // Contains Value and Key collection fields
+            [typeof(LinkedList<>)] = t => LinkedListOpenedMethod.MakeGenericMethod(t),
+            [typeof(Dictionary<,>)] = t => DictionaryOpenedMethod.MakeGenericMethod(t),
+            [typeof(SortedDictionary<,>)] = t => SortedDictionaryOpenedMethod.MakeGenericMethod(t)
         };
     }
 }

@@ -32,14 +32,5 @@ namespace Simple.Dotnet.Cloning.Generators
 
             return generator;
         }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static ILGenerator LoadLocalOntoStack(this ILGenerator generator, bool isStruct)
-        {
-            if (isStruct) generator.Emit(OpCodes.Ldloca, (byte)0);
-            else generator.Emit(OpCodes.Ldloc_0);
-
-            return generator;
-        }
     }
 }

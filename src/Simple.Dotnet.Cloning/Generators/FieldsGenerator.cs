@@ -10,7 +10,7 @@ namespace Simple.Dotnet.Cloning.Generators
         {
             foreach (var field in fields) _ = field.FieldType switch
             {
-                var ft when ft.IsSafeToCopyType() => generator.CopyFieldValue(owner, field),
+                var ft when ft.IsSafeToCopy() => generator.CopyFieldValue(owner, field),
                 _ => generator.DeepCloneField(owner, field)
             };
 

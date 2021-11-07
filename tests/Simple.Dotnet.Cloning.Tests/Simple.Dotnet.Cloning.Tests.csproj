@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Simple.Dotnet.Cloning\Simple.Dotnet.Cloning.csproj" />
+    <ProjectReference Include="..\Simple.Dotnet.Cloning.Tests.Common\Simple.Dotnet.Cloning.Tests.Common.csproj" />
   </ItemGroup>
 
 </Project>

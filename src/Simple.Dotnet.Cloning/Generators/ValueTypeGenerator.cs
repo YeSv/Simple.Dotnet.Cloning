@@ -17,7 +17,7 @@ namespace Simple.Dotnet.Cloning.Generators
             var fields = fieldsLazy(type);
 
             // If all fields are safe to copy - we can just copy struct by value or use field by field copy otherwise
-            return fields.All(f => f.FieldType.IsSafeToCopyType()) ? generator.CopyByValue() : generator.DeepCopyFields(type, fields);
+            return fields.All(f => f.FieldType.IsSafeToCopy()) ? generator.CopyByValue() : generator.DeepCopyFields(type, fields);
         }
     }
 }

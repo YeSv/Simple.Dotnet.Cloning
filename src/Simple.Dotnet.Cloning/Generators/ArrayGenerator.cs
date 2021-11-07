@@ -13,7 +13,9 @@ namespace Simple.Dotnet.Cloning.Generators
         static readonly Type TwoDimClonerType = typeof(ArrayCloner.TwoDim);
         static readonly Type ThreeDimClonerType = typeof(ArrayCloner.ThreeDim);
         static readonly Type FourDimClonerType = typeof(ArrayCloner.FourDim);
-        static readonly MethodInfo MemberwiseCloneMethod = ArrayType.GetMethod(nameof(MemberwiseClone), BindingFlags.Instance | BindingFlags.NonPublic);
+        static readonly MethodInfo MemberwiseCloneMethod = ArrayType.GetMethod(
+            nameof(MemberwiseClone), 
+            BindingFlags.Instance | BindingFlags.NonPublic);
 
         public static ILGenerator CopyArray(this ILGenerator generator, Type type, bool deep = true)
         {
@@ -27,7 +29,7 @@ namespace Simple.Dotnet.Cloning.Generators
 
             // Not null:
             var elementType = type.GetElementType(); // Get underlying type
-            var useShallow = !deep || elementType.IsSafeToCopyType(); // Check whether it's possible to use shallow clone 
+            var useShallow = !deep || elementType.IsSafeToCopy(); // Check whether it's possible to use shallow clone 
             _ = type.GetArrayRank() switch // Decide which method to use
             {
                 1 => useShallow ? ShallowClone(generator, elementType, SingleDimClonerType) : DeepClone(generator, elementType, SingleDimClonerType),

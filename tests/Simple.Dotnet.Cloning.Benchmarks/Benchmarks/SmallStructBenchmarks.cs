@@ -2,32 +2,52 @@
 using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
+using Simple.Dotnet.Cloning.Tests.Common;
 
 namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 {
     [MemoryDiagnoser]
-    public class SmallStructClone
+    public class SmallStructDeepClone
     {
         SmallStruct _instance = new(int.MaxValue, long.MaxValue, Guid.NewGuid());
 
         [GlobalSetup]
         public void Setup()
         {
-            AutoMapperCloner.DeepClone(_instance);
             ForceCloner.DeepClone(_instance);
-            JsonCloner.DeepClone(_instance);
-            MessagePackCloner.DeepClone(_instance);
             SimpleCloner.DeepClone(_instance);
         }
-
-        [Benchmark]
-        public SmallStruct AutoMapper() => AutoMapperCloner.DeepClone(_instance);
 
         [Benchmark]
         public SmallStruct Force() => ForceCloner.DeepClone(_instance);
 
         [Benchmark]
         public SmallStruct Simple() => SimpleCloner.DeepClone(_instance);
+    }
+
+    [MemoryDiagnoser]
+    public class SmallStructShallowClone
+    {
+        SmallStruct _instance = new(int.MaxValue, long.MaxValue, Guid.NewGuid());
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            AutoMapperCloner.ShallowClone(_instance);
+            ForceCloner.ShallowClone(_instance);
+            SimpleCloner.ShallowClone(_instance);
+        }
+
+
+        [Benchmark]
+        public SmallStruct AutoMapper() => AutoMapperCloner.ShallowClone(_instance);
+
+
+        [Benchmark]
+        public SmallStruct Force() => ForceCloner.ShallowClone(_instance);
+
+        [Benchmark]
+        public SmallStruct Simple() => SimpleCloner.ShallowClone(_instance);
     }
 
     [MemoryDiagnoser]
@@ -53,9 +73,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #region Dictionary
 
         [Benchmark]
-        public Dictionary<string, SmallStruct> Dictionary_AutoMapper() => AutoMapperCloner.DeepClone(_dictionary);
-
-        [Benchmark]
         public Dictionary<string, SmallStruct> Dictionary_Force() => ForceCloner.DeepClone(_dictionary);
 
         [Benchmark]
@@ -64,9 +81,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #endregion
 
         #region Array
-
-        [Benchmark]
-        public SmallStruct[] Array_AutoMapper() => AutoMapperCloner.DeepClone(_array);
 
         [Benchmark]
         public SmallStruct[] Array_Force() => ForceCloner.DeepClone(_array);
@@ -79,9 +93,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #region HashSet
 
         [Benchmark]
-        public HashSet<SmallStruct> HashSet_AutoMapper() => AutoMapperCloner.DeepClone(_hashSet);
-
-        [Benchmark]
         public HashSet<SmallStruct> HashSet_Force() => ForceCloner.DeepClone(_hashSet);
 
         [Benchmark]
@@ -90,9 +101,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #endregion
 
         #region List
-
-        [Benchmark]
-        public List<SmallStruct> List_AutoMapper() => AutoMapperCloner.DeepClone(_list);
 
         [Benchmark]
         public List<SmallStruct> List_Force() => ForceCloner.DeepClone(_list);
@@ -104,10 +112,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 
         static void WarmupFor<T>(T instance)
         {
-            AutoMapperCloner.DeepClone(instance);
             ForceCloner.DeepClone(instance);
-            JsonCloner.DeepClone(instance);
-            MessagePackCloner.DeepClone(instance);
             SimpleCloner.DeepClone(instance);
         }
     }
