@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Runtime.Serialization;
 
-namespace Simple.Dotnet.Cloning.Benchmarks
+namespace Simple.Dotnet.Cloning.Tests.Common 
 {
     [DataContract]
     public readonly struct SmallStruct : IComparable<SmallStruct>

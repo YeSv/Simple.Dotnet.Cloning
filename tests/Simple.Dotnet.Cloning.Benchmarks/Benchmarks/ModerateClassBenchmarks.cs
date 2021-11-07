@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
+using Simple.Dotnet.Cloning.Tests.Common;
 
 namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 {
     [MemoryDiagnoser]
-    public class ModerateClassClone
+    public class ModerateClassDeepClone
     {
         ModerateClass _instance;
 
@@ -17,19 +18,42 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         public void Setup()
         {
             _instance = ModerateClassGenerator.Generate(Lengths, Lengths);
-            AutoMapperCloner.DeepClone(_instance);
             ForceCloner.DeepClone(_instance);
             SimpleCloner.DeepClone(_instance);
         }
-
-        [Benchmark]
-        public ModerateClass AutoMapper() => AutoMapperCloner.DeepClone(_instance);
 
         [Benchmark]
         public ModerateClass Force() => ForceCloner.DeepClone(_instance);
 
         [Benchmark]
         public ModerateClass Simple() => SimpleCloner.DeepClone(_instance);
+    }
+
+    [MemoryDiagnoser]
+    public class ModerateShallowClone
+    {
+        ModerateClass _instance;
+
+        [Params(10, 100)]
+        public int Lengths;
+
+        [GlobalSetup]
+        public void Setup()
+        {
+            _instance = ModerateClassGenerator.Generate(Lengths, Lengths);
+            AutoMapperCloner.ShallowClone(_instance);
+            ForceCloner.ShallowClone(_instance);
+            SimpleCloner.ShallowClone(_instance);
+        }
+
+        [Benchmark]
+        public ModerateClass AutoMapper() => AutoMapperCloner.ShallowClone(_instance);
+
+        [Benchmark]
+        public ModerateClass Force() => ForceCloner.ShallowClone(_instance);
+
+        [Benchmark]
+        public ModerateClass Simple() => SimpleCloner.ShallowClone(_instance);
     }
 
     [MemoryDiagnoser]
@@ -55,9 +79,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #region Dictionary
 
         [Benchmark]
-        public Dictionary<string, ModerateClass> Dictionary_AutoMapper() => AutoMapperCloner.DeepClone(_dictionary);
-
-        [Benchmark]
         public Dictionary<string, ModerateClass> Dictionary_Force() => ForceCloner.DeepClone(_dictionary);
 
         [Benchmark]
@@ -66,9 +87,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #endregion
 
         #region Array
-
-        [Benchmark]
-        public ModerateClass[] Array_AutoMapper() => AutoMapperCloner.DeepClone(_array);
 
         [Benchmark]
         public ModerateClass[] Array_Force() => ForceCloner.DeepClone(_array);
@@ -81,9 +99,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #region HashSet
 
         [Benchmark]
-        public HashSet<ModerateClass> HashSet_AutoMapper() => AutoMapperCloner.DeepClone(_hashSet);
-
-        [Benchmark]
         public HashSet<ModerateClass> HashSet_Force() => ForceCloner.DeepClone(_hashSet);
 
         [Benchmark]
@@ -92,9 +107,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         #endregion
 
         #region List
-
-        [Benchmark]
-        public List<ModerateClass> List_AutoMapper() => AutoMapperCloner.DeepClone(_list);
 
         [Benchmark]
         public List<ModerateClass> List_Force() => ForceCloner.DeepClone(_list);
@@ -106,7 +118,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 
         static void WarmupFor<T>(T instance)
         {
-            AutoMapperCloner.DeepClone(instance);
             ForceCloner.DeepClone(instance);
             SimpleCloner.DeepClone(instance);
         }

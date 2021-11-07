@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Simple.Dotnet.Cloning.Benchmarks
+namespace Simple.Dotnet.Cloning.Tests.Common
 {
     public static class CollectionsGenerator
     {

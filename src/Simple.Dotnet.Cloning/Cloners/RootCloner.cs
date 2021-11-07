@@ -8,7 +8,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 {
     internal static class RootCloner<T>
     {
-        internal delegate T CloneDelegate(T instance);
+        delegate T CloneDelegate(T instance);
 
         static readonly Type Type = typeof(T);
         static readonly Module ClonerModule = typeof(Cloner).Module;

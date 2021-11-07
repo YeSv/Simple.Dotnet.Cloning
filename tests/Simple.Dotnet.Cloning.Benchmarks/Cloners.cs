@@ -9,7 +9,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks
     {
         static readonly IMapper _mapper = new MapperConfiguration(c => { }).CreateMapper();
 
-        public static T DeepClone<T>(T value) => _mapper.Map<T>(value);
+        public static T ShallowClone<T>(T value) => _mapper.Map<T>(value);
     }
 
     public static class MessagePackCloner
@@ -25,10 +25,12 @@ namespace Simple.Dotnet.Cloning.Benchmarks
     public static class ForceCloner
     {
         public static T DeepClone<T>(T value) => DeepClonerExtensions.DeepClone(value);
+        public static T ShallowClone<T>(T value) => DeepClonerExtensions.ShallowClone(value);
     }
 
     public static class SimpleCloner
     {
         public static T DeepClone<T>(T value) => Cloner.DeepClone(value);
+        public static T ShallowClone<T>(T value) => Cloner.ShallowClone(value);
     }
 }

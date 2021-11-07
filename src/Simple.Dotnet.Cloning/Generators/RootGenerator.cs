@@ -17,8 +17,8 @@ namespace Simple.Dotnet.Cloning.Generators
   
             _ = type switch
             {
-                { } when type.IsSafeToCopyType() => generator.CopyByValue(), // When type is safe to copy - just load onto stack and return (for example: string is immutable)
-                { } when type.IsRecurringType() => generator.CopyRecurringType(type), // When type is recurring (references itself) - use special cloner
+                { } when type.IsCustomCloning() => generator.CopyCustomCloningType(type), // When type has custom cloner - use it instead of all other
+                { } when type.IsSafeToCopy() => generator.CopyByValue(), // When type is safe to copy - just load onto stack and return (for example: string is immutable)
                 { IsValueType: true } => generator.CopyValueType(type, FieldsLazy), // Copy value type
                 { IsInterface: true } => generator.CopyInterface(type), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type), // Copy abstract class at runtime
@@ -41,8 +41,7 @@ namespace Simple.Dotnet.Cloning.Generators
             _ = type switch
             {
                 // If type is a value type or safe to copy reference type -> we can just load it as a shallow clone
-                { } when type.IsValueType || type.IsSafeToCopyType() => generator.CopyByValue(),
-                { } when type.IsRecurringType() => generator.ShallowCopyReferenceType(type, FieldsLazy(type)), // Recurring reference types are cloned as other reference types
+                { } when type.IsValueType || type.IsSafeToCopy() => generator.CopyByValue(),
                 { IsInterface: true } => generator.CopyInterface(type, false), // Copy interface at runtime
                 { IsAbstract: true } => generator.CopyAbstractClass(type, false), // Copy abstract class at runtime
                 { } when type == ObjectType => generator.CopyObject(false), // Copy object at runtime

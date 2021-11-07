@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Simple.Dotnet.Cloning
@@ -18,7 +19,7 @@ namespace Simple.Dotnet.Cloning
             if (type.IsPointer) return true;
             if (type.IsPrimitive) return true;
             if (type.IsMarshalByRef) return true;
-            if (Types.SafeToCopy.Contains(type)) return true;
+            if (CloningTypes.SafeToCopy.Contains(type)) return true;
 
             // Handle nullables and their inner type
             var nullableInner = Nullable.GetUnderlyingType(type);
@@ -28,15 +29,15 @@ namespace Simple.Dotnet.Cloning
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && Types.SafeToCopy.Contains(openGeneric)) return true;
+                if (openGeneric != null && CloningTypes.SafeToCopy.Contains(openGeneric)) return true;
             }
 
             return false;
         }
 
-        public static bool IsSafeToCopyType(this Type type)
+        public static bool IsSafeToCopy(this Type type)
         {
-            if (Types.SafeToCopy.Contains(type)) return true;
+            if (CloningTypes.SafeToCopy.Contains(type)) return true;
             if (type.IsValueType) return type.IsSafeToCopyValueType();
 
             // Do nothing with marshal by ref
@@ -55,19 +56,19 @@ namespace Simple.Dotnet.Cloning
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && Types.SafeToCopy.Contains(openGeneric)) return true;
+                if (openGeneric != null && CloningTypes.SafeToCopy.Contains(openGeneric)) return true;
             }
 
             return false;
         }
 
-        public static bool IsRecurringType(this Type type)
+        public static bool IsCustomCloning(this Type type)
         {
-            if (Types.Recurring.Contains(type)) return true;
+            if (CloningTypes.Custom.ContainsKey(type)) return true;
             if (type.IsGenericType)
             {
                 var openGeneric = type.GetGenericTypeDefinition();
-                if (openGeneric != null && Types.Recurring.Contains(openGeneric)) return true;
+                if (openGeneric != null && CloningTypes.Custom.ContainsKey(openGeneric)) return true;
             }
 
             return false;

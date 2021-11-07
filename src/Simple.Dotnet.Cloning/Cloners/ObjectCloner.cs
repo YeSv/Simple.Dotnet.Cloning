@@ -7,7 +7,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 {
     internal static class ObjectCloner
     {
-        internal delegate object CloneDelegate(object instance);
+        delegate object CloneDelegate(object instance);
 
         static readonly Type ObjectType = typeof(object);
         static readonly Type OpenClonerType = typeof(RootCloner<>);
