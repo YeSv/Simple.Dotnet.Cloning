@@ -55,6 +55,7 @@ namespace Simple.Dotnet.Cloning.Tests.Common
             .RuleFor(c => c.Value17, g => CollectionsGenerator.SortedSet(collectionsLength, i => (decimal)i))
             .RuleFor(c => c.Value24, g => CollectionsGenerator.LinkedList(collectionsLength, i => (long)i))
             .RuleFor(c => c.Value39, g => CollectionsGenerator.HashSet(collectionsLength, i => (long)i))
+            .RuleFor(c => c.Value48, g => CollectionsGenerator.Array(collectionsLength, i =>  i % 2 == 0 ? new decimal?(12.2M) : new decimal?()))
             .RuleFor(c => c.Value50, g => CollectionsGenerator.Array(collectionsLength, i => StringsSmallClassGenerator.Generate(stringsLength)))
             .Generate();
     }

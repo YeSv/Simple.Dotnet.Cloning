@@ -4,7 +4,6 @@ namespace Simple.Dotnet.Cloning.Cloners
 {
     internal static class RecurringTypesCloner
     {
-        // TODO: How to handle such types without specifiing them here?)
         public static LinkedList<T> CloneLinkedList<T>(LinkedList<T> linkedList)
         {
             if (linkedList == null) return null;
@@ -21,7 +20,7 @@ namespace Simple.Dotnet.Cloning.Cloners
             if (dictionary == null) return null;
             if (dictionary.Count == 0) return new();
 
-            var clone = new Dictionary<TKey, TValue>(dictionary.Comparer);
+            var clone = new Dictionary<TKey, TValue>(dictionary.Count, dictionary.Comparer);
             foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key), RootCloner<TValue>.DeepClone(element.Value));
 
             return clone;

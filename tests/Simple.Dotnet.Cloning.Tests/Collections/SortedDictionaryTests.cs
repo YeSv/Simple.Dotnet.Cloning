@@ -38,10 +38,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void SortedDictionary_DeepClone_Should_Have_Cloned_Values()
         {
             var collection = Create<SortedDictionaryTests>(10, i => new());
-            IsEqual(collection, new Wrapper<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperRecord<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperStruct<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperReadonly<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, new Wrapper<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperRecord<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperStruct<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperReadonly<SortedDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -55,13 +55,13 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         }
 
         [Fact]
-        public void SortedDictionary_ShallowClone_Should_Be_Different_As_Interface()
+        public void SortedDictionary_DeepClone_Should_Be_Different_As_Interface()
         {
             var collection = Create<SortedDictionaryTests>(10, i => new());
 
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IDictionary<int, SortedDictionaryTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IEnumerable<KeyValuePair<int, SortedDictionaryTests>>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IReadOnlyDictionary<int, SortedDictionaryTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IDictionary<int, SortedDictionaryTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IEnumerable<KeyValuePair<int, SortedDictionaryTests>>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)((IReadOnlyDictionary<int, SortedDictionaryTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -78,10 +78,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void SortedDictionary_DeepClone_Should_Have_Different_Values_As_Interface()
         {
             var collection = Create<SortedDictionaryTests>(10, i => new());
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new Wrapper<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperRecord<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperStruct<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperReadonly<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new Wrapper<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperRecord<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperStruct<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedDictionary<int, SortedDictionaryTests>)new WrapperReadonly<IDictionary<int, SortedDictionaryTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             return collection;
         }
 
-        static bool IsEqual<T>(SortedDictionary<int, T> collection, SortedDictionary<int, T> clone, Func<T, T, bool> comparer)
+        static bool IsEqual<T>(SortedDictionary<int, T> collection, SortedDictionary<int, T> clone, Func<T, T, bool> comparer, bool deep = false)
         {
             if (collection == null || clone == null) return collection == clone;
             if (collection == clone) return false;
@@ -139,6 +139,15 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             {
                 if (!first.MoveNext() || !second.MoveNext()) return false;
                 if (!comparer(first.Current.Value, second.Current.Value)) return false;
+            }
+
+            if (deep)
+            {
+                clone.Add(int.MinValue, default);
+                if (clone.Count == collection.Count) return false;
+                if (clone.Count() == collection.Count()) return false;
+                if (clone.Values.Count() == collection.Values.Count()) return false;
+                if (clone.Keys.Count() == collection.Keys.Count()) return false;
             }
 
             return true;

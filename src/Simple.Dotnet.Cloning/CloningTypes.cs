@@ -37,6 +37,10 @@ namespace Simple.Dotnet.Cloning
             typeof(long?),
             typeof(ulong),
             typeof(ulong?),
+            typeof(double),
+            typeof(double?),
+            typeof(decimal),
+            typeof(decimal?),
             typeof(IntPtr),
             typeof(IntPtr?),
             typeof(UIntPtr),
@@ -132,6 +136,9 @@ namespace Simple.Dotnet.Cloning
             typeof(SortedDictionary<,>.ValueCollection),
             typeof(SortedDictionary<,>.KeyCollection),
 
+            // Data
+            typeof(DBNull),
+
             // Serialization
             typeof(SerializationInfo),
             typeof(SerializationBinder),
@@ -145,7 +152,6 @@ namespace Simple.Dotnet.Cloning
             typeof(IComparer<>),
             typeof(ICustomAttributeProvider),
             typeof(IEqualityComparer<>),
-            typeof(IEquatable<>),
             typeof(IFormatter),
             typeof(IFormatterConverter),
             typeof(IFormatProvider),

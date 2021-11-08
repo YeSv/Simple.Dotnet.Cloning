@@ -22,8 +22,10 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         public int CompareTo(SmallStruct other) => Value2.CompareTo(other.Value2);
     }
 
+    public abstract class AbstractClass { }
+
     [DataContract]
-    public sealed class SmallClass : IComparable<SmallClass>
+    public sealed class SmallClass : AbstractClass, IComparable<SmallClass>
     {
         [DataMember(Order = 0)] public int? Value1 { get; set; }
         [DataMember(Order = 1)] public long Value2 { get; set; }
@@ -74,7 +76,7 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         Value10
     }
 
-    public class StringsSmallClass
+    public class StringsSmallClass : AbstractClass
     {
         public string Value1 { get; set; }
 
@@ -83,7 +85,7 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         public string Value3 { get; set; }
     }
 
-    public class HugeClass
+    public class HugeClass : AbstractClass
     {
         public int Value1 { get; set; }
 
@@ -260,7 +262,7 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         public string Value100 { get; set; }
     }
 
-    public class StandardOnlyClass
+    public class StandardOnlyClass : AbstractClass 
     {
         public int Value1 { get; set; }
 
@@ -284,7 +286,7 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         public bool Value11 { get; set; }
     }
 
-    public class ModerateClass
+    public class ModerateClass : AbstractClass
     {
         public int Value1 { get; set; }
 
@@ -342,9 +344,6 @@ namespace Simple.Dotnet.Cloning.Tests.Common
 
         public long Value28 { get; set; }
 
-        /// <summary>
-        ///     HasComboBonus value
-        /// </summary>
         public bool Value29 { get; set; }
 
         public decimal? Value30 { get; set; }
@@ -388,5 +387,19 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         public bool Value49 { get; set; }
 
         public StringsSmallClass[] Value50 { get; set; }
+    }
+
+    public class InterfaceClass<T>
+    {
+        public IEnumerable<T> Values { get; set; }
+    }
+
+    public class InterfaceWrapperClass
+    {
+        public IEnumerable<int> Ints { get; set; }
+        public IEnumerable<KeyValuePair<int, Guid>> GuidsMap { get; set; }
+        public IEnumerable<object> Objects { get; set; }
+        public IReadOnlyList<StandardOnlyClass> StandardOnlyList { get; set; }
+        public IDictionary<int, SmallStruct> StructMap { get; set; }
     }
 }
