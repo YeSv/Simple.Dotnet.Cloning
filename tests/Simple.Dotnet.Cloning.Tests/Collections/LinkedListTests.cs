@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Simple.Dotnet.Cloning.Tests.Collections
@@ -46,10 +47,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void LinkedList_DeepClone_Should_Have_Cloned_Values_Wrappers()
         {
             var collection = Create<LinkedListTests>(10, i => new());
-            IsEqual(collection, new Wrapper<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperRecord<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperStruct<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperReadonly<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, new Wrapper<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperRecord<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperStruct<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperReadonly<LinkedList<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -63,13 +64,13 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         }
 
         [Fact]
-        public void LinkedList_ShallowClone_Should_Be_Different_As_Interface()
+        public void LinkedList_DeepClone_Should_Be_Different_As_Interface()
         {
             var collection = Create<LinkedListTests>(10, i => new());
 
-            IsEqual(collection, (LinkedList<LinkedListTests>)((IReadOnlyCollection<LinkedListTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (LinkedList<LinkedListTests>)((IEnumerable<LinkedListTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (LinkedList<LinkedListTests>)((ICollection<LinkedListTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)((IReadOnlyCollection<LinkedListTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)((IEnumerable<LinkedListTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)((ICollection<LinkedListTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -86,10 +87,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void LinkedList_DeepClone_Should_Have_Different_Values_As_Interface()
         {
             var collection = Create<LinkedListTests>(10, i => new());
-            IsEqual(collection, (LinkedList<LinkedListTests>)new Wrapper<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperRecord<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperStruct<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperReadonly<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)new Wrapper<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperRecord<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperStruct<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (LinkedList<LinkedListTests>)new WrapperReadonly<IEnumerable<LinkedListTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         static bool ShouldBeSame<T>(
@@ -113,7 +114,7 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             return collection;
         }
 
-        static bool IsEqual<T>(LinkedList<T> collection, LinkedList<T> clone, Func<T, T, bool> comparer)
+        static bool IsEqual<T>(LinkedList<T> collection, LinkedList<T> clone, Func<T, T, bool> comparer, bool deep = false)
         {
             if (collection == null || clone == null) return collection == clone;
             if (collection == clone) return false;
@@ -125,6 +126,14 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
                 if (!first.MoveNext() || !second.MoveNext()) return false;
                 if (!comparer(first.Current, second.Current)) return false;
             }
+
+            if (deep)
+            {
+                clone.AddLast(default(T));
+                if (clone.Count == collection.Count) return false;
+                if (clone.Count() == collection.Count()) return false;
+            }
+
 
             return true;
         }

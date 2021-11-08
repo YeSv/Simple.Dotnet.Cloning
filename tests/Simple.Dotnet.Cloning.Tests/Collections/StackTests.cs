@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Simple.Dotnet.Cloning.Tests.Collections
@@ -46,10 +47,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void Stack_DeepClone_Should_Have_Cloned_Values_Wrappers()
         {
             var collection = Create<StackTests>(10, i => new());
-            IsEqual(collection, new Wrapper<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperRecord<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperStruct<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperReadonly<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, new Wrapper<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperRecord<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperStruct<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperReadonly<Stack<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -62,12 +63,12 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         }
 
         [Fact]
-        public void Stack_ShallowClone_Should_Be_Different_As_Interface()
+        public void Stack_DeepClone_Should_Be_Different_As_Interface()
         {
             var collection = Create<StackTests>(10, i => new());
 
-            IsEqual(collection, (Stack<StackTests>)((IEnumerable<StackTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (Stack<StackTests>)((IReadOnlyCollection<StackTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)((IEnumerable<StackTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)((IReadOnlyCollection<StackTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -84,10 +85,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void Stack_DeepClone_Should_Have_Different_Values_As_Interface()
         {
             var collection = Create<StackTests>(10, i => new());
-            IsEqual(collection, (Stack<StackTests>)new Wrapper<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (Stack<StackTests>)new WrapperRecord<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (Stack<StackTests>)new WrapperStruct<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (Stack<StackTests>)new WrapperReadonly<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)new Wrapper<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)new WrapperRecord<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)new WrapperStruct<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (Stack<StackTests>)new WrapperReadonly<IEnumerable<StackTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         static bool ShouldBeSame<T>(
@@ -111,7 +112,7 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             return collection;
         }
 
-        static bool IsEqual<T>(Stack<T> collection, Stack<T> clone, Func<T, T, bool> comparer)
+        static bool IsEqual<T>(Stack<T> collection, Stack<T> clone, Func<T, T, bool> comparer, bool deep = false)
         {
             if (collection == null || clone == null) return collection == clone;
             if (collection == clone) return false;
@@ -122,6 +123,13 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             {
                 if (!first.MoveNext() || !second.MoveNext()) return false;
                 if (!comparer(first.Current, second.Current)) return false;
+            }
+
+            if (deep)
+            {
+                clone.Push(default);
+                if (clone.Count == collection.Count) return false;
+                if (clone.Count() == collection.Count()) return false;
             }
 
             return true;

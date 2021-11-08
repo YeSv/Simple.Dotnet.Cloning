@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Simple.Dotnet.Cloning.Tests.Collections
@@ -37,10 +38,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void SortedSet_DeepClone_Should_Have_Cloned_Values()
         {
             var collection = Create<SortedSetTests>(10, i => new());
-            IsEqual(collection, new Wrapper<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperRecord<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperStruct<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, new WrapperReadonly<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, new Wrapper<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperRecord<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperStruct<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, new WrapperReadonly<SortedSet<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -54,13 +55,13 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         }
 
         [Fact]
-        public void SortedSet_ShallowClone_Should_Be_Different_As_Interface()
+        public void SortedSet_DeepClone_Should_Be_Different_As_Interface()
         {
             var collection = Create<SortedSetTests>(10, i => new());
 
-            IsEqual(collection, (SortedSet<SortedSetTests>)((ISet<SortedSetTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedSet<SortedSetTests>)((IEnumerable<SortedSetTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedSet<SortedSetTests>)((ICollection<SortedSetTests>)collection).DeepClone(), (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)((ISet<SortedSetTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)((IEnumerable<SortedSetTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)((ICollection<SortedSetTests>)collection).DeepClone(), (f, s) => f != s, true).Should().BeTrue();
         }
 
         [Fact]
@@ -77,10 +78,10 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
         public void SortedSet_DeepClone_Should_Have_Different_Values_As_Interface()
         {
             var collection = Create<SortedSetTests>(10, i => new());
-            IsEqual(collection, (SortedSet<SortedSetTests>)new Wrapper<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperRecord<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperStruct<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
-            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperReadonly<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)new Wrapper<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperRecord<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperStruct<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
+            IsEqual(collection, (SortedSet<SortedSetTests>)new WrapperReadonly<IEnumerable<SortedSetTests>>(collection).DeepClone().Value, (f, s) => f != s, true).Should().BeTrue();
         }
 
         static bool ShouldBeSame<T>(
@@ -104,7 +105,7 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             return collection;
         }
 
-        static bool IsEqual<T>(SortedSet<T> collection, SortedSet<T> clone, Func<T, T, bool> comparer)
+        static bool IsEqual<T>(SortedSet<T> collection, SortedSet<T> clone, Func<T, T, bool> comparer, bool deep = false)
         {
             if (collection == null || clone == null) return collection == clone;
             if (collection == clone) return false;
@@ -115,6 +116,13 @@ namespace Simple.Dotnet.Cloning.Tests.Collections
             {
                 if (!first.MoveNext() || !second.MoveNext()) return false;
                 if (!comparer(first.Current, second.Current)) return false;
+            }
+
+            if (deep)
+            {
+                clone.Add(default);
+                if (clone.Count == collection.Count) return false;
+                if (clone.Count() == collection.Count()) return false;
             }
 
             return true;
