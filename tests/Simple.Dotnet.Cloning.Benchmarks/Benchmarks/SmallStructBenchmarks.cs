@@ -42,7 +42,6 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [Benchmark]
         public SmallStruct AutoMapper() => AutoMapperCloner.ShallowClone(_instance);
 
-
         [Benchmark]
         public SmallStruct Force() => ForceCloner.ShallowClone(_instance);
 
@@ -58,7 +57,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         SmallStruct[] _array;
         HashSet<SmallStruct> _hashSet;
 
-        [Params(10)]
+        [Params(10, 100)]
         public int Size;
 
         [GlobalSetup]

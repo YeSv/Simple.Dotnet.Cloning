@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Linq;
+using System.IO;
 using System.Linq.Expressions;
 
 namespace Simple.Dotnet.Cloning
 {
     internal static class TypeExtensions
     {
+        static readonly Type StreamType = typeof(Stream);
         static readonly Type DelegateType = typeof(Delegate);
         static readonly Type ExceptionType = typeof(Exception);
         static readonly Type ExpressionType = typeof(Expression);
@@ -43,6 +44,9 @@ namespace Simple.Dotnet.Cloning
             // Do nothing with marshal by ref
             if (type.IsMarshalByRef) return true;
 
+            // Do nothing with COM objects
+            if (type.IsCOMObject) return true;
+
             // Exceptions are ok
             if (ExceptionType.IsAssignableFrom(type)) return true;
 
@@ -51,6 +55,9 @@ namespace Simple.Dotnet.Cloning
 
             // Delegates are ok
             if (DelegateType.IsAssignableFrom(type) || MulticastDelegateType.IsAssignableFrom(type)) return true;
+
+            // Streams are ok
+            if (StreamType.IsAssignableFrom(type)) return true;
 
             // Check if generic is safe to copy
             if (type.IsGenericType)

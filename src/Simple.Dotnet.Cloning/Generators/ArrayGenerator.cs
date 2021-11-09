@@ -1,5 +1,6 @@
 ﻿using Simple.Dotnet.Cloning.Cloners;
 using System;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
@@ -17,7 +18,7 @@ namespace Simple.Dotnet.Cloning.Generators
             nameof(MemberwiseClone), 
             BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static ILGenerator CopyArray(this ILGenerator generator, Type type, bool deep = true)
+        public static ILGenerator CopyArray(this ILGenerator generator, Type type, Func<Type, FieldInfo[]> fields, bool deep = true)
         {
             var nullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();
@@ -29,7 +30,9 @@ namespace Simple.Dotnet.Cloning.Generators
 
             // Not null:
             var elementType = type.GetElementType(); // Get underlying type
-            var useShallow = !deep || elementType.IsSafeToCopy(); // Check whether it's possible to use shallow clone 
+            var useShallow = !deep 
+                || elementType.IsSafeToCopy() 
+                || (elementType.IsValueType && fields(elementType).All(f => f.FieldType.IsSafeToCopy())); // Check whether it's possible to use shallow clone 
             _ = type.GetArrayRank() switch // Decide which method to use
             {
                 1 => useShallow ? ShallowClone(generator, elementType, SingleDimClonerType) : DeepClone(generator, elementType, SingleDimClonerType),

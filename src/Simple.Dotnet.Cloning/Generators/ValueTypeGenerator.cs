@@ -7,7 +7,6 @@ namespace Simple.Dotnet.Cloning.Generators
 {
     internal static class ValueTypeGenerator
     {
-        // Check whether all fields are safe to copy, if so -> just copy whole instance, copy field by field otherwise
         public static ILGenerator CopyValueType(this ILGenerator generator, Type type, Func<Type, FieldInfo[]> fieldsLazy)
         {
             // For nullable - use special handling
@@ -16,8 +15,11 @@ namespace Simple.Dotnet.Cloning.Generators
 
             var fields = fieldsLazy(type);
 
-            // If all fields are safe to copy - we can just copy struct by value or use field by field copy otherwise
-            return fields.All(f => f.FieldType.IsSafeToCopy()) ? generator.CopyByValue() : generator.DeepCopyFields(type, fields);
+            generator.CopyByValue(); // Copy struct by value -> clone = instance
+
+            if (!fields.All(f => f.FieldType.IsSafeToCopy())) generator.DeepCopyValueTypeFields(type, fields); // Deep clone fields that are not safe to copy
+
+            return generator;
         }
     }
 }
