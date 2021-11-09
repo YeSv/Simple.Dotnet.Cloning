@@ -1,0 +1,52 @@
+name: release
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "tag: git tag"
+        required: true
+
+env:
+  GIT_TAG: ${{ github.event.inputs.tag }}
+
+
+jobs:
+  build-dotnet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      NUGET_XMLDOC_MODE: skip
+    steps:
+      - name: Setup .NET Core SDK ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Build
+        run: dotnet build src/Simple.Dotnet.Cloning -c Release -p:Version=${{ env.GIT_TAG }}
+      - name: Test
+        run: dotnet test tests/Simple.Dotnet.Cloning.Tests -c Release --no-build
+      - name: Pack 
+        run: dotnet pack src/Simple.Dotnet.Cloning/Simple.Dotnet.Cloning.csproj -c Release --no-build -p:Version=${{ env.GIT_TAG }} -o ./publish
+      - name: Create artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: package
+          path: ./publish/
+          retention-days: 1
+
+  publish-artifact:
+    needs: [build-dotnet]
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+      NUGET_XMLDOC_MODE: skip
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: package
+      - name: Nuget push
+        run: dotnet nuget push "*.nupkg" --skip-duplicate -s https://www.nuget.org/api/v2/package -k ${{ secrets.NUGET_KEY }}

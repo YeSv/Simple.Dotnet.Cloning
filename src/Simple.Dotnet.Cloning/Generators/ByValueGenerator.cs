@@ -23,9 +23,13 @@ namespace Simple.Dotnet.Cloning.Generators
             if (owner.IsValueType) generator.Emit(OpCodes.Ldloca_S, (byte)0);
             else generator.Emit(OpCodes.Ldloc_0);
 
-            generator.Emit(OpCodes.Ldarg_0); // Load argument onto stack
+            // Load instance to stack
+            if (owner.IsValueType) generator.Emit(OpCodes.Ldarga_S, (byte)0);
+            else generator.Emit(OpCodes.Ldarg_0);
+            
             generator.Emit(OpCodes.Ldfld, field); // Load argument's field
             generator.Emit(OpCodes.Stfld, field); // Store local's field
+
             return generator;
         }
     }

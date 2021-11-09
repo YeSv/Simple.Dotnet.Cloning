@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Runtime;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -59,6 +60,8 @@ namespace Simple.Dotnet.Cloning
             typeof(CancellationToken?),
             typeof(Memory<>),
             typeof(ReadOnlyMemory<>),
+            typeof(Span<>),
+            typeof(ReadOnlySpan<>),
             typeof(ImmutableArray<>),
             typeof(ArraySegment<>),
             typeof(CancellationTokenRegistration),
@@ -106,6 +109,7 @@ namespace Simple.Dotnet.Cloning
             typeof(EventWaitHandle),
 
             // Reflection
+            typeof(Binder),
             typeof(Assembly),
             typeof(Type),
             typeof(TypeInfo),
@@ -128,6 +132,11 @@ namespace Simple.Dotnet.Cloning
             typeof(ImmutableQueue<>),
             typeof(ImmutableList<>),
             typeof(ImmutableHashSet<>),
+            typeof(IImmutableDictionary<,>),
+            typeof(IImmutableStack<>),
+            typeof(IImmutableQueue<>),
+            typeof(IImmutableList<>),
+            typeof(IImmutableSet<>),
 
             // Collections
             typeof(LinkedListNode<>), // Cloning will break collection
@@ -135,9 +144,6 @@ namespace Simple.Dotnet.Cloning
             typeof(Dictionary<,>.KeyCollection),
             typeof(SortedDictionary<,>.ValueCollection),
             typeof(SortedDictionary<,>.KeyCollection),
-
-            // Data
-            typeof(DBNull),
 
             // Serialization
             typeof(SerializationInfo),
@@ -147,8 +153,12 @@ namespace Simple.Dotnet.Cloning
             typeof(XmlObjectSerializer),
             typeof(XmlSerializableServices),
 
+            // Special
+            typeof(DBNull),
+            typeof(ApplicationId),
+            typeof(MarshalByRefObject),
+
             // Interfaces
-            typeof(IBufferWriter<>),
             typeof(IComparer<>),
             typeof(ICustomAttributeProvider),
             typeof(IEqualityComparer<>),
@@ -156,6 +166,35 @@ namespace Simple.Dotnet.Cloning
             typeof(IFormatterConverter),
             typeof(IFormatProvider),
             typeof(IServiceProvider),
+
+
+            // Runtime
+            typeof(MemoryFailPoint),
+            typeof(GCHandle),
+            typeof(GCHandle?),
+            typeof(HandleRef),
+            typeof(HandleRef?),
+            typeof(OSPlatform),
+            typeof(OSPlatform?),
+            typeof(ICustomFactory),
+            typeof(ICustomMarshaler),
+
+            // Netstandard2.1 types 
+            #if NETSTANDARD2_1_OR_GREATER || NET5_0_OR_GREATER
+            typeof(Index),
+            typeof(Index?),
+            typeof(Range),
+            typeof(Range?),
+            #endif
+
+            // Net 5 +
+            #if NET5_0_OR_GREATER
+            typeof(ProfileOptimization),
+            typeof(ComWrappers.ComInterfaceDispatch),
+            typeof(ComWrappers.ComInterfaceDispatch?),
+            typeof(ComWrappers.ComInterfaceEntry),
+            typeof(ComWrappers.ComInterfaceEntry?),
+            #endif
         };
 
         public static readonly Dictionary<Type, Func<Type[], MethodInfo>> Custom = new Dictionary<Type, Func<Type[], MethodInfo>>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Numerics;
 using System.Runtime.Serialization;
 
 namespace Simple.Dotnet.Cloning.Tests.Common 
@@ -20,6 +21,74 @@ namespace Simple.Dotnet.Cloning.Tests.Common
         }
 
         public int CompareTo(SmallStruct other) => Value2.CompareTo(other.Value2);
+    }
+
+    public struct HugeValueStruct
+    {
+        public int Value1 { get; set; }
+
+        public double Value2 { get; set; }
+
+        public double Value3 { get; set; }
+
+        public long Value4 { get; set; }
+
+        public Guid Value5 { get; set; }
+
+        public float Value6 { get; set; }
+
+        public Guid? Value7 { get; set; }
+
+        public double Value8 { get; set; }
+
+        public Guid Value9 { get; set; }
+
+        public DateTime Value10 { get; set; }
+
+        public int Value11 { get; set; }
+
+        public int Value12 { get; set; }
+
+        public int Value13 { get; set; }
+
+        public DateTime Value14 { get; set; }
+
+        public int Value15 { get; set; }
+
+        public BigInteger Value16 { get; set; }
+    }
+
+    public struct HugeStruct
+    {
+        public int Value1 { get; set; }
+
+        public double Value2 { get; set; }
+
+        public double Value3 { get; set; }
+
+        public long Value4 { get; set; }
+
+        public Guid Value5 { get; set; }
+
+        public SmallClass Value6 { get; set; }
+
+        public Guid? Value7 { get; set; }
+
+        public double Value8 { get; set; }
+
+        public Guid Value9 { get; set; }
+
+        public DateTime Value10 { get; set; }
+
+        public int Value11 { get; set; }
+
+        public StandardOnlyClass Value12 { get; set; }
+
+        public int Value13 { get; set; }
+
+        public SmallClass Value14 { get; set; }
+
+        public int Value15 { get; set; }
     }
 
     public abstract class AbstractClass { }

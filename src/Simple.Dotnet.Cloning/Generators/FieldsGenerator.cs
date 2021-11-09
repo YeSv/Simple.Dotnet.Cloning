@@ -23,5 +23,16 @@ namespace Simple.Dotnet.Cloning.Generators
 
             return generator;
         }
+
+        public static ILGenerator DeepCopyValueTypeFields(this ILGenerator generator, Type owner, FieldInfo[] fields)
+        {
+            foreach (var field in fields)
+            {
+                if (field.FieldType.IsSafeToCopy()) continue;
+                generator.DeepCloneField(owner, field);
+            }
+
+            return generator;
+        }
     }
 }

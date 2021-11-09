@@ -81,4 +81,49 @@ namespace Simple.Dotnet.Cloning.Tests.Common
             .RuleFor(c => c.Value81, g => CollectionsGenerator.List(collectionsLength, i => SmallClassGenerator.Generate()));
 
     }
+
+    public static class HugeValueStructGenerator
+    {
+        public static HugeValueStruct Generate() => new HugeValueStruct
+        {
+            Value1 = int.MaxValue,
+            Value2 = double.MaxValue,
+            Value3 = double.MaxValue,
+            Value4 = long.MaxValue,
+            Value5 = Guid.NewGuid(),
+            Value6 = float.MaxValue,
+            Value7 = Guid.NewGuid(),
+            Value8 = double.MaxValue,
+            Value9 = Guid.NewGuid(),
+            Value10 = DateTime.UtcNow,
+            Value11 = int.MinValue,
+            Value12 = int.MinValue,
+            Value13 = int.MaxValue,
+            Value14 = DateTime.UtcNow,
+            Value15 = int.MinValue,
+            Value16 = new System.Numerics.BigInteger(decimal.MaxValue)
+        };
+    }
+
+    public static class HugeStructGenerator
+    {
+        public static HugeStruct Generate() => new HugeStruct
+        {
+            Value1 = int.MaxValue,
+            Value2 = double.MaxValue,
+            Value3 = double.MaxValue,
+            Value4 = long.MaxValue,
+            Value5 = Guid.NewGuid(),
+            Value6 = SmallClassGenerator.Generate(),
+            Value7 = Guid.NewGuid(),
+            Value8 = double.MaxValue,
+            Value9 = Guid.NewGuid(),
+            Value10 = DateTime.UtcNow,
+            Value11 = int.MinValue,
+            Value12 = StandardOnlyGenerator.Generate(),
+            Value13 = int.MaxValue,
+            Value14 = SmallClassGenerator.Generate(),
+            Value15 = int.MinValue
+        };
+    }
 }
