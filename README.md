@@ -453,106 +453,186 @@ In short:
 
 [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used for benchmarking.
 
-[DeepCloner](https://github.com/force-net/DeepCloner) was used for both deep and shallow cloning.
+[Force](https://github.com/force-net/DeepCloner) was used for both deep and shallow cloning.
 [AutoMapper](https://github.com/AutoMapper/AutoMapper) was used for shallow cloning.
+[FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) was used for deep cloning
+[NCloner](https://github.com/mijay/NClone) - was used for deep cloning
+[DeepCopy](https://github.com/ReubenBond/DeepCopy) - was used for deep cloning
+
+Runtime: .NET 5.0
 
 Results:
 
+(+) - winner
+(-) - exception
+(?) - questionable
+
 1. `HugeStruct` deep clone
 ```
-    | Method |      Mean |    Error |   StdDev |  Gen 0 | Allocated |
-    |------- |----------:|---------:|---------:|-------:|----------:|
-    |  Force | 415.25 ns | 7.653 ns | 7.158 ns | 0.0811 |     384 B |
-    | Simple |  93.06 ns | 1.838 ns | 1.966 ns | 0.0373 |     176 B |
+    |         Method |         Mean |     Error |    StdDev |  Gen 0 | Allocated |
+    |--------------- |-------------:|----------:|----------:|-------:|----------:|
+    |          Force |    378.53 ns |  7.555 ns | 10.341 ns | 0.0815 |     384 B |
+ (+)|         Simple |     80.44 ns |  0.380 ns |  0.317 ns | 0.0373 |     176 B |
+    |        NCloner |    175.46 ns |  1.063 ns |  0.887 ns | 0.0849 |     400 B |
+    | FastDeepCloner | 15,679.01 ns | 82.525 ns | 73.156 ns | 1.0071 |   4,840 B |
+    |       DeepCopy |    252.62 ns |  1.347 ns |  1.260 ns | 0.0372 |     176 B |
 ```
 2. `HugeStruct` collections deep clone (Size - collection's length and string lengths if any)
 ```
-    |            Method | Size |      Mean |     Error |    StdDev |   Gen 0 |  Gen 1 | Allocated |
-    |------------------ |----- |----------:|----------:|----------:|--------:|-------:|----------:|
-    |  Dictionary_Force |   10 |  6.889 us | 0.0614 us | 0.0575 us |  1.8311 | 0.0687 |      8 KB |
-    | Dictionary_Simple |   10 |  2.393 us | 0.0303 us | 0.0283 us |  0.7668 | 0.0191 |      4 KB |
-    |       Array_Force |   10 |  3.971 us | 0.0466 us | 0.0413 us |  1.4191 | 0.0381 |      7 KB |
-    |      Array_Simple |   10 |  1.057 us | 0.0131 us | 0.0116 us |  0.6676 | 0.0134 |      3 KB |
-    |     HashSet_Force |   10 |  6.491 us | 0.0618 us | 0.0547 us |  1.7776 | 0.0610 |      8 KB |
-    |    HashSet_Simple |   10 |  2.592 us | 0.0504 us | 0.0421 us |  0.9346 | 0.0267 |      4 KB |
-    |        List_Force |   10 |  4.131 us | 0.0764 us | 0.0714 us |  1.4267 | 0.0381 |      7 KB |
-    |       List_Simple |   10 |  1.082 us | 0.0215 us | 0.0230 us |  0.6733 | 0.0153 |      3 KB |
-    |  Dictionary_Force |  100 | 68.289 us | 1.2100 us | 1.1318 us | 18.5547 | 4.6387 |     86 KB |
-    | Dictionary_Simple |  100 | 23.463 us | 0.4133 us | 0.5374 us |  7.2937 | 1.4038 |     34 KB |
-    |       Array_Force |  100 | 41.402 us | 0.7891 us | 0.9980 us | 13.9160 | 2.7466 |     64 KB |
-    |      Array_Simple |  100 | 10.754 us | 0.2111 us | 0.4312 us |  6.6223 | 1.0986 |     30 KB |
-    |     HashSet_Force |  100 | 67.709 us | 1.2821 us | 1.4764 us | 18.0664 | 4.5166 |     84 KB |
-    |    HashSet_Simple |  100 | 29.340 us | 0.5803 us | 0.7943 us |  9.8877 | 2.4719 |     46 KB |
-    |        List_Force |  100 | 40.332 us | 0.7973 us | 0.8862 us | 13.9160 | 2.7466 |     64 KB |
-    |       List_Simple |  100 | 10.717 us | 0.1518 us | 0.1346 us |  6.6223 | 1.0986 |     31 KB |
+    |                    Method | Size |         Mean |       Error |      StdDev |  Gen 0 |  Gen 1 | Allocated |
+    |-------------------------- |----- |-------------:|------------:|------------:|-------:|-------:|----------:|
+    |          Dictionary_Force |   10 |   6,439.3 ns |    60.85 ns |    50.81 ns | 1.8463 | 0.0687 |      8 KB |
+ (+)|         Dictionary_Simple |   10 |   2,401.0 ns |    48.08 ns |    49.37 ns | 0.7668 | 0.0191 |      4 KB |
+    | Dictionary_FastDeepCloner |   10 |   2,587.8 ns |    12.80 ns |    11.35 ns | 1.4687 | 0.0305 |      7 KB |
+ (-)|        Dictionary_NCloner |   10 | 330,229.5 ns | 6,494.52 ns | 8,670.00 ns | 0.9766 |      - |      5 KB |
+    | Dictionary_DeepCopyCloner |   10 |   9,544.9 ns |    45.38 ns |    40.23 ns | 2.7924 | 0.1068 |     13 KB |
+
+    |               Array_Force |   10 |   3,685.8 ns |    22.26 ns |    18.59 ns | 1.4191 | 0.0381 |      7 KB |
+    |              Array_Simple |   10 |     953.7 ns |     6.10 ns |     5.09 ns | 0.6676 | 0.0134 |      3 KB |
+    |      Array_FastDeepCloner |   10 |   5,882.1 ns |    93.50 ns |    87.46 ns | 1.1444 |      - |      5 KB |
+ (+)|             Array_NCloner |   10 |     261.8 ns |     1.90 ns |     1.78 ns | 0.3467 | 0.0038 |      2 KB |
+    |      Array_DeepCopyCloner |   10 |   3,919.6 ns |    30.29 ns |    26.85 ns | 1.6327 | 0.0381 |      8 KB |
+
+    |             HashSet_Force |   10 |   5,915.4 ns |    35.89 ns |    31.81 ns | 1.7776 | 0.0610 |      8 KB |
+    |            HashSet_Simple |   10 |   2,299.8 ns |     9.10 ns |     8.07 ns | 0.9346 | 0.0267 |      4 KB |
+ (?)|    HashSet_FastDeepCloner |   10 |   1,535.2 ns |    27.87 ns |    28.62 ns | 0.2384 |      - |      1 KB |
+ (+)|           HashSet_NCloner |   10 |   1,513.0 ns |    30.09 ns |    28.14 ns | 0.9041 | 0.0191 |      4 KB |
+    |    HashSet_DeepCopyCloner |   10 |   9,166.2 ns |    72.42 ns |    67.74 ns | 2.6550 | 0.0916 |     12 KB |
+
+    |                List_Force |   10 |   3,899.2 ns |    24.46 ns |    21.69 ns | 1.4267 | 0.0381 |      7 KB |
+    |               List_Simple |   10 |     992.3 ns |    19.83 ns |    36.26 ns | 0.6733 | 0.0153 |      3 KB |
+    |       List_FastDeepCloner |   10 |   4,858.3 ns |    21.52 ns |    20.13 ns | 1.7166 | 0.0305 |      8 KB |
+ (+)|              List_NCloner |   10 |     747.2 ns |     6.87 ns |     5.74 ns | 0.4549 | 0.0048 |      2 KB |
+    |       List_DeepCopyCloner |   10 |   3,971.0 ns |    37.21 ns |    32.98 ns | 1.6403 | 0.0458 |      8 KB |
 ```
+* Actually interesting how `NClone` provided both fastest result and least allocations
+** (?) - FastDeepCloner only allocated 1KB - something is really strange there...
+
 3. `HugeClass` deep clone (Length - inner collections lengths and string lengths if any)
 ```
-    | Method | Lengths |         Mean |      Error |     StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
-    |------- |-------- |-------------:|-----------:|-----------:|----------:|----------:|---------:|----------:|
-    |  Force |      10 |    257.39 us |   2.060 us |   1.826 us |   62.0117 |   27.8320 |        - |    299 KB |
-    | Simple |      10 |     54.49 us |   0.982 us |   0.919 us |   24.7803 |    8.2397 |        - |    123 KB |
-    |  Force |     100 | 61,710.88 us | 540.697 us | 479.313 us | 2444.4444 | 1000.0000 | 333.3333 | 23,479 KB |
-    | Simple |     100 | 17,082.55 us | 248.953 us | 220.691 us | 1687.5000 |  687.5000 | 187.5000 |  9,224 KB |
+    |         Method | Lengths |          Mean |        Error |       StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+    |--------------- |-------- |--------------:|-------------:|-------------:|----------:|----------:|---------:|----------:|
+    |          Force |      10 |     247.96 us |     4.822 us |     5.922 us |   60.5469 |   25.3906 |        - |    299 KB |
+ (+)|         Simple |      10 |      52.52 us |     1.048 us |     1.862 us |   24.7803 |    8.2397 |        - |    123 KB |
+ (-)|        NCloner |      10 |     332.91 us |     6.381 us |     7.349 us |   11.2305 |    0.4883 |        - |     52 KB |
+    | FastDeepCloner |      10 |   3,643.53 us |    10.027 us |     9.379 us |  183.5938 |   54.6875 |        - |    853 KB |
+    |       DeepCopy |      10 |     154.62 us |     0.632 us |     0.561 us |   26.3672 |    8.7891 |        - |    127 KB |
+
+    |          Force |     100 |  57,732.51 us | 1,134.273 us | 1,626.741 us | 2444.4444 | 1000.0000 | 333.3333 | 23,479 KB |
+ (+)|         Simple |     100 |  16,966.50 us |   335.886 us |   561.190 us | 1687.5000 |  687.5000 | 187.5000 |  9,224 KB |
+ (-)|        NCloner |     100 |   1,089.96 us |    11.565 us |    10.818 us |   58.5938 |   23.4375 |   1.9531 |    448 KB |
+    | FastDeepCloner |     100 | 249,228.70 us | 1,631.372 us | 1,446.168 us | 8333.3333 | 1333.3333 |        - | 51,708 KB |
+    |       DeepCopy |     100 |  28,924.61 us |   556.715 us |   641.114 us | 1687.5000 |  687.5000 | 187.5000 |  9,268 KB |
 ```
+* `NCloner` throws an exception when dictionary is used (it finds recursive reference)
+** `DeepCopy` actually achieved very good results
+
 3. `HugeClass` collections deep clone (Size - collections and inner collections lengths and string lengths if any)
 ```
-    |            Method | Size |       Mean |     Error |    StdDev |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
-    |------------------ |----- |-----------:|----------:|----------:|---------:|---------:|---------:|----------:|
-    |  Dictionary_Force |   10 | 6,910.0 us | 137.11 us | 146.70 us | 421.8750 | 242.1875 | 101.5625 |      3 MB |
-    | Dictionary_Simple |   10 |   884.6 us |  17.63 us |  22.29 us | 200.1953 |  99.6094 |        - |      1 MB |
-    |       Array_Force |   10 | 6,920.5 us | 136.78 us | 182.60 us | 406.2500 | 226.5625 |  85.9375 |      3 MB |
-    |      Array_Simple |   10 |   864.4 us |  16.39 us |  15.33 us | 200.1953 |  99.6094 |        - |      1 MB |
-    |     HashSet_Force |   10 | 6,954.2 us | 136.49 us | 186.83 us | 406.2500 | 234.3750 |  85.9375 |      3 MB |
-    |    HashSet_Simple |   10 |   864.5 us |  13.63 us |  12.75 us | 200.1953 |  99.6094 |        - |      1 MB |
-    |        List_Force |   10 | 6,903.1 us | 120.08 us | 112.32 us | 414.0625 | 234.3750 |  85.9375 |      3 MB |
-    |       List_Simple |   10 |   873.4 us |  16.94 us |  16.64 us | 200.1953 |  99.6094 |        - |      1 MB |
+    |                    Method | Size |          Mean |       Error |      StdDev |     Gen 0 |    Gen 1 |    Gen 2 | Allocated |
+    |-------------------------- |----- |--------------:|------------:|------------:|----------:|---------:|---------:|----------:|
+    |          Dictionary_Force |   10 |  7,043.774 us | 136.5682 us | 204.4089 us |  453.1250 | 281.2500 | 125.0000 |  2,893 KB |
+ (+)|         Dictionary_Simple |   10 |    749.908 us |   5.1918 us |   4.8564 us |  200.1953 |  99.6094 |        - |  1,230 KB |
+    | Dictionary_FastDeepCloner |   10 | 38,521.535 us | 204.0324 us | 180.8694 us | 1384.6154 | 230.7692 |        - |  8,523 KB |
+ (-)|        Dictionary_NCloner |   10 |    320.590 us |   6.0813 us |   7.4683 us |    0.4883 |        - |        - |      3 KB |
+    | Dictionary_DeepCopyCloner |   10 |  2,013.803 us |  13.9209 us |  12.3405 us |  207.0313 | 101.5625 |        - |  1,270 KB |
+
+    |               Array_Force |   10 |  6,918.871 us | 131.0067 us | 140.1757 us |  468.7500 | 304.6875 | 140.6250 |  2,892 KB |
+ (+)|              Array_Simple |   10 |    750.457 us |   4.0980 us |   3.6327 us |  200.1953 |  99.6094 |        - |  1,230 KB |
+    |      Array_FastDeepCloner |   10 | 40,475.264 us | 285.4302 us | 222.8451 us | 1384.6154 | 230.7692 |        - |  8,524 KB |
+ (-)|             Array_NCloner |   10 |    317.698 us |   6.1435 us |   7.5448 us |   11.2305 |   0.4883 |        - |     53 KB |
+    |      Array_DeepCopyCloner |   10 |  2,009.401 us |  26.7981 us |  25.0670 us |  203.1250 | 101.5625 |        - |  1,267 KB |
+
+    |             HashSet_Force |   10 |  6,956.630 us | 135.9055 us | 251.9096 us |  429.6875 | 250.0000 | 101.5625 |  2,891 KB |
+ (+)|            HashSet_Simple |   10 |    758.049 us |   4.5134 us |   4.2218 us |  200.1953 |  99.6094 |        - |  1,230 KB |
+    |    HashSet_FastDeepCloner |   10 |      1.586 us |   0.0148 us |   0.0139 us |    0.2384 |        - |        - |      1 KB |
+ (-)|           HashSet_NCloner |   10 |      1.364 us |   0.0156 us |   0.0145 us |    0.4406 |   0.0019 |        - |      2 KB |
+    |    HashSet_DeepCopyCloner |   10 |  1,960.830 us |  24.4612 us |  22.8810 us |  207.0313 | 103.5156 |        - |  1,269 KB |
+
+    |                List_Force |   10 |  7,106.354 us | 140.7465 us | 274.5153 us |  453.1250 | 281.2500 | 125.0000 |  2,893 KB |
+ (+)|               List_Simple |   10 |    752.582 us |   2.0828 us |   1.7393 us |  200.1953 |  99.6094 |        - |  1,230 KB |
+    |       List_FastDeepCloner |   10 | 38,590.474 us | 120.8423 us | 113.0359 us | 1384.6154 | 230.7692 |        - |  8,524 KB |
+ (-)|              List_NCloner |   10 |    331.219 us |   6.4581 us |   7.1782 us |   11.2305 |   0.4883 |        - |     53 KB |
+    |       List_DeepCopyCloner |   10 |  1,997.253 us |  15.9839 us |  14.9513 us |  203.1250 | 101.5625 |        - |  1,267 KB |
 ```
+* `NCloner` throws an exception when dictionary is used (it finds recursive reference)
+** `DeepCopy` actually achieved very good results
+
 4. `SmallClass` deep clone
 ```
-    | Method |      Mean |     Error |    StdDev |  Gen 0 | Allocated |
-    |------- |----------:|----------:|----------:|-------:|----------:|
-    |  Force | 80.945 ns | 0.8727 ns | 0.8163 ns | 0.0391 |     184 B |
-    | Simple |  4.880 ns | 0.0802 ns | 0.0711 ns | 0.0102 |      48 B |
+    |         Method |         Mean |     Error |    StdDev |  Gen 0 | Allocated |
+    |--------------- |-------------:|----------:|----------:|-------:|----------:|
+    |          Force |    72.811 ns | 0.3304 ns | 0.3090 ns | 0.0391 |     184 B |
+ (+)|         Simple |     4.307 ns | 0.0266 ns | 0.0236 ns | 0.0102 |      48 B |
+    |        NCloner |   450.783 ns | 1.0098 ns | 0.9445 ns | 0.1135 |     536 B |
+    | FastDeepCloner | 1,875.743 ns | 5.8108 ns | 5.4354 ns | 0.2785 |   1,312 B |
+    |       DeepCopy |    24.448 ns | 0.0712 ns | 0.0666 ns | 0.0102 |      48 B |
 ```
+
 5. `SmallClass` collections deep clone (Size - collection's size)
 ```
-    |            Method | Size |       Mean |    Error |   StdDev |  Gen 0 |  Gen 1 | Allocated |
-    |------------------ |----- |-----------:|---------:|---------:|-------:|-------:|----------:|
-    |  Dictionary_Force |   10 | 1,846.4 ns | 14.00 ns | 13.10 ns | 0.6199 | 0.0076 |   2,920 B |
-    | Dictionary_Simple |   10 |   503.0 ns |  8.77 ns | 11.40 ns | 0.1955 |      - |     920 B |
-    |       Array_Force |   10 | 1,024.8 ns | 20.36 ns | 20.91 ns | 0.3281 | 0.0019 |   1,552 B |
-    |      Array_Simple |   10 |   133.1 ns |  2.07 ns |  1.83 ns | 0.1240 | 0.0005 |     584 B |
-    |     HashSet_Force |   10 | 1,412.5 ns | 26.24 ns | 23.26 ns | 0.4215 | 0.0038 |   1,984 B |
-    |    HashSet_Simple |   10 |   311.7 ns |  3.89 ns |  3.45 ns | 0.2003 | 0.0010 |     944 B |
-    |        List_Force |   10 | 1,113.9 ns | 19.76 ns | 18.48 ns | 0.3414 |      - |   1,608 B |
-    |       List_Simple |   10 |   144.6 ns |  2.89 ns |  3.96 ns | 0.1309 | 0.0005 |     616 B |
+    |                    Method | Size |         Mean |       Error |      StdDev |       Median |  Gen 0 |  Gen 1 | Allocated |
+    |-------------------------- |----- |-------------:|------------:|------------:|-------------:|-------:|-------:|----------:|
+    |          Dictionary_Force |   10 |   1,890.4 ns |    10.09 ns |     7.88 ns |   1,892.5 ns | 0.6332 |      - |   2,992 B |
+ (+)|         Dictionary_Simple |   10 |     456.3 ns |     1.80 ns |     1.68 ns |     456.8 ns | 0.1955 |      - |     920 B |
+    | Dictionary_FastDeepCloner |   10 |  19,690.8 ns |    84.74 ns |    79.26 ns |  19,702.7 ns | 1.3123 |      - |   6,184 B |
+ (-)|        Dictionary_NCloner |   10 | 324,061.7 ns | 5,833.81 ns | 6,242.11 ns | 325,325.3 ns | 0.4883 |      - |   3,409 B |
+    | Dictionary_DeepCopyCloner |   10 |   2,263.9 ns |    10.24 ns |     9.58 ns |   2,265.2 ns | 0.6714 |      - |   3,176 B |
+
+    |               Array_Force |   10 |     933.7 ns |     2.49 ns |     2.32 ns |     932.7 ns | 0.3290 |      - |   1,552 B |
+ (+)|              Array_Simple |   10 |     122.1 ns |     0.72 ns |     0.64 ns |     122.1 ns | 0.1240 |      - |     584 B |
+    |      Array_FastDeepCloner |   10 |  23,668.8 ns |    87.65 ns |    81.99 ns |  23,670.1 ns | 1.4343 |      - |   6,856 B |
+    |             Array_NCloner |   10 |   4,656.6 ns |    29.25 ns |    25.93 ns |   4,655.2 ns | 1.0910 | 0.0076 |   5,136 B |
+    |      Array_DeepCopyCloner |   10 |     442.1 ns |     3.69 ns |     3.08 ns |     440.5 ns | 0.1240 |      - |     584 B |
+
+    |             HashSet_Force |   10 |   1,258.2 ns |     6.15 ns |     5.75 ns |   1,259.2 ns | 0.4215 |      - |   1,984 B |
+ (+)|            HashSet_Simple |   10 |     287.9 ns |     1.46 ns |     1.22 ns |     287.7 ns | 0.2003 |      - |     944 B |
+    |    HashSet_FastDeepCloner |   10 |   1,553.4 ns |    31.10 ns |    53.65 ns |   1,524.5 ns | 0.2384 |      - |   1,128 B |
+    |           HashSet_NCloner |   10 |   1,377.8 ns |    27.55 ns |    31.73 ns |   1,377.7 ns | 0.4406 |      - |   2,080 B |
+    |    HashSet_DeepCopyCloner |   10 |   1,840.4 ns |    15.52 ns |    12.96 ns |   1,832.8 ns | 0.5474 | 0.0038 |   2,576 B |
+
+    |                List_Force |   10 |   1,018.0 ns |    12.15 ns |    10.14 ns |   1,014.3 ns | 0.3414 |      - |   1,608 B |
+ (+)|               List_Simple |   10 |     131.0 ns |     1.20 ns |     1.07 ns |     130.7 ns | 0.1309 | 0.0005 |     616 B |
+    |       List_FastDeepCloner |   10 |  22,952.4 ns |   307.07 ns |   287.24 ns |  22,785.5 ns | 1.4954 |      - |   7,088 B |
+    |              List_NCloner |   10 |   5,230.5 ns |    35.24 ns |    32.96 ns |   5,223.9 ns | 1.1444 |      - |   5,400 B |
+    |       List_DeepCopyCloner |   10 |     482.9 ns |     1.85 ns |     1.73 ns |     482.8 ns | 0.1307 |      - |     616 B |
 ```
+* `DeepCopy` is really fast actually
+** `Force` achieves nice performance when working with dictionaries
+
 6. `HugeValueStruct` deep clone
 ```
-    | Method |      Mean |    Error |   StdDev |  Gen 0 | Allocated |
-    |------- |----------:|---------:|---------:|-------:|----------:|
-    |  Force | 314.89 ns | 3.231 ns | 2.864 ns | 0.0544 |     256 B |
-    | Simple |  74.25 ns | 1.010 ns | 0.895 ns | 0.0085 |      40 B |   
+    |         Method |        Mean |     Error |    StdDev |  Gen 0 | Allocated |
+    |--------------- |------------:|----------:|----------:|-------:|----------:|
+    |          Force |   310.50 ns |  4.477 ns |  3.968 ns | 0.0544 |     256 B |
+ (+)|         Simple |    68.69 ns |  0.315 ns |  0.263 ns | 0.0085 |      40 B |
+    |        NCloner |   186.23 ns |  0.715 ns |  0.669 ns | 0.0865 |     408 B |
+    | FastDeepCloner | 7,048.90 ns | 34.966 ns | 32.707 ns | 0.6332 |   2,992 B |
+    |       DeepCopy |   273.99 ns |  1.571 ns |  1.469 ns | 0.0081 |      40 B |  
 ```
 * You see allocated here because one of fields is `BigInteger` which contains array
+
 7. `SmallStruct` deep clone (test that cloner does not allocate anything when structs without reference types or structs that contain references are cloned)
 ```
-    | Method |      Mean |     Error |    StdDev | Allocated |
-    |------- |----------:|----------:|----------:|----------:|
-    |  Force | 18.669 ns | 0.1684 ns | 0.1576 ns |         - |
-    | Simple |  3.593 ns | 0.0583 ns | 0.0517 ns |         - |
+    |         Method |       Mean |      Error |     StdDev |  Gen 0 | Allocated |
+    |--------------- |-----------:|-----------:|-----------:|-------:|----------:|
+    |          Force |  19.407 ns |  0.0639 ns |  0.0597 ns |      - |         - |
+ (+)|         Simple |   3.524 ns |  0.0188 ns |  0.0176 ns |      - |         - |
+    |        NCloner | 132.989 ns |  2.3786 ns |  3.5601 ns | 0.0627 |     296 B |
+    | FastDeepCloner | 983.546 ns | 15.7042 ns | 14.6897 ns | 0.2441 |   1,152 B |
+    |       DeepCopy |  18.340 ns |  0.0606 ns |  0.0567 ns |      - |         - |
 ```
 8. `HugeClass` shallow clone (I guess AutoMapper just returns the same instance, still `Simple` is faster)
 ```
     |     Method | Lengths |     Mean |    Error |   StdDev |  Gen 0 |  Gen 1 | Allocated |
     |----------- |-------- |---------:|---------:|---------:|-------:|-------:|----------:|
-    | AutoMapper |      10 | 94.16 ns | 0.641 ns | 0.568 ns |      - |      - |         - |
+ (?)| AutoMapper |      10 | 94.16 ns | 0.641 ns | 0.568 ns |      - |      - |         - |
     |      Force |      10 | 90.93 ns | 1.085 ns | 0.962 ns | 0.1564 |      - |     736 B |
-    |     Simple |      10 | 68.35 ns | 1.269 ns | 1.187 ns | 0.1564 | 0.0004 |     736 B |
-    | AutoMapper |     100 | 99.55 ns | 0.399 ns | 0.333 ns |      - |      - |         - |
+ (+)|     Simple |      10 | 68.35 ns | 1.269 ns | 1.187 ns | 0.1564 | 0.0004 |     736 B |
+
+ (?)| AutoMapper |     100 | 99.55 ns | 0.399 ns | 0.333 ns |      - |      - |         - |
     |      Force |     100 | 94.41 ns | 1.626 ns | 1.521 ns | 0.1564 | 0.0004 |     736 B |
-    |     Simple |     100 | 68.39 ns | 0.916 ns | 0.857 ns | 0.1564 | 0.0004 |     736 B |
+ (+)|     Simple |     100 | 68.39 ns | 0.916 ns | 0.857 ns | 0.1564 | 0.0004 |     736 B |
 ```
 9. `SmallClass` shallow clone
 ```
@@ -560,7 +640,7 @@ Results:
     |----------- |----------:|----------:|----------:|-------:|----------:|
     | AutoMapper | 92.138 ns | 0.8030 ns | 0.7119 ns |      - |         - |
     |      Force | 47.838 ns | 0.6368 ns | 0.5957 ns | 0.0102 |      48 B |
-    |     Simple |  4.795 ns | 0.0997 ns | 0.0884 ns | 0.0102 |      48 B |
+ (+)|     Simple |  4.795 ns | 0.0997 ns | 0.0884 ns | 0.0102 |      48 B |
 ```
 
 # 6. Considerations
