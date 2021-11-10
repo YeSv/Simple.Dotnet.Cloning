@@ -15,18 +15,22 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         public int Lengths;
 
         [GlobalSetup]
-        public void Setup()
-        {
-            _instance = HugeClassGenerator.Generate(Lengths, Lengths);
-            ForceCloner.DeepClone(_instance);
-            SimpleCloner.DeepClone(_instance);
-        }
+        public void Setup() => Warmup.WarmupFor(_instance = HugeClassGenerator.Generate(Lengths, Lengths));
 
         [Benchmark]
         public HugeClass Force() => ForceCloner.DeepClone(_instance);
 
         [Benchmark]
         public HugeClass Simple() => SimpleCloner.DeepClone(_instance);
+
+        [Benchmark]
+        public HugeClass NCloner() => NClonerCloner.DeepClone(_instance);
+
+        [Benchmark]
+        public HugeClass FastDeepCloner() => FastDeepClonerCloner.DeepClone(_instance);
+
+        [Benchmark]
+        public HugeClass DeepCopy() => DeepCopyCloner.DeepClone(_instance);
     }
 
     [MemoryDiagnoser]
@@ -38,14 +42,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         public int Lengths;
 
         [GlobalSetup]
-        public void Setup()
-        {
-            _instance = HugeClassGenerator.Generate(Lengths, Lengths);
-            ForceCloner.ShallowClone(_instance);
-            SimpleCloner.ShallowClone(_instance);
-            AutoMapperCloner.ShallowClone(_instance);
-        }
-
+        public void Setup() => Warmup.WarmupFor(_instance = HugeClassGenerator.Generate(Lengths, Lengths));
 
         [Benchmark]
         public HugeClass AutoMapper() => AutoMapperCloner.ShallowClone(_instance);
@@ -71,10 +68,10 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
-            WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => HugeClassGenerator.Generate(10, 10)));
-            WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToHashSet());
-            WarmupFor(_array = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToArray());
-            WarmupFor(_list = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToList());
+            Warmup.WarmupFor(_dictionary = Enumerable.Range(0, Size).ToDictionary(s => s.ToString(), s => HugeClassGenerator.Generate(10, 10)));
+            Warmup.WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToHashSet());
+            Warmup.WarmupFor(_array = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToArray());
+            Warmup.WarmupFor(_list = Enumerable.Range(0, Size).Select(i => HugeClassGenerator.Generate(10, 10)).ToList());
         }
 
         #region Dictionary
@@ -84,6 +81,15 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 
         [Benchmark]
         public Dictionary<string, HugeClass> Dictionary_Simple() => SimpleCloner.DeepClone(_dictionary);
+
+        [Benchmark]
+        public Dictionary<string, HugeClass> Dictionary_FastDeepCloner() => FastDeepClonerCloner.DeepClone(_dictionary);
+
+        [Benchmark]
+        public Dictionary<string, HugeClass> Dictionary_NCloner() => NClonerCloner.DeepClone(_dictionary);
+
+        [Benchmark]
+        public Dictionary<string, HugeClass> Dictionary_DeepCopyCloner() => DeepCopyCloner.DeepClone(_dictionary);
 
         #endregion
 
@@ -95,6 +101,15 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [Benchmark]
         public HugeClass[] Array_Simple() => SimpleCloner.DeepClone(_array);
 
+        [Benchmark]
+        public HugeClass[] Array_FastDeepCloner() => FastDeepClonerCloner.DeepClone(_array);
+
+        [Benchmark]
+        public HugeClass[] Array_NCloner() => NClonerCloner.DeepClone(_array);
+
+        [Benchmark]
+        public HugeClass[] Array_DeepCopyCloner() => DeepCopyCloner.DeepClone(_array);
+
         #endregion
 
         #region HashSet
@@ -104,6 +119,15 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 
         [Benchmark]
         public HashSet<HugeClass> HashSet_Simple() => SimpleCloner.DeepClone(_hashSet);
+
+        [Benchmark]
+        public HashSet<HugeClass> HashSet_FastDeepCloner() => FastDeepClonerCloner.DeepClone(_hashSet);
+
+        [Benchmark]
+        public HashSet<HugeClass> HashSet_NCloner() => NClonerCloner.DeepClone(_hashSet);
+
+        [Benchmark]
+        public HashSet<HugeClass> HashSet_DeepCopyCloner() => DeepCopyCloner.DeepClone(_hashSet);
 
         #endregion
 
@@ -115,12 +139,15 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         [Benchmark]
         public List<HugeClass> List_Simple() => SimpleCloner.DeepClone(_list);
 
-        #endregion
+        [Benchmark]
+        public List<HugeClass> List_FastDeepCloner() => FastDeepClonerCloner.DeepClone(_list);
 
-        static void WarmupFor<T>(T instance)
-        {
-            ForceCloner.DeepClone(instance);
-            SimpleCloner.DeepClone(instance);
-        }
+        [Benchmark]
+        public List<HugeClass> List_NCloner() => NClonerCloner.DeepClone(_list);
+
+        [Benchmark]
+        public List<HugeClass> List_DeepCopyCloner() => DeepCopyCloner.DeepClone(_list);
+
+        #endregion
     }
 }
