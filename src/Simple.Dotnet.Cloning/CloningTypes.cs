@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Simple.Dotnet.Cloning.Cloners;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime;
@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
-using static Simple.Dotnet.Cloning.Generators.CustomTypesGenerator;
+using static Simple.Dotnet.Cloning.Cloners.CustomTypesCloner;
 
 namespace Simple.Dotnet.Cloning
 {
@@ -62,7 +62,6 @@ namespace Simple.Dotnet.Cloning
             typeof(ReadOnlyMemory<>),
             typeof(Span<>),
             typeof(ReadOnlySpan<>),
-            typeof(ImmutableArray<>),
             typeof(ArraySegment<>),
             typeof(CancellationTokenRegistration),
             typeof(CancellationTokenRegistration?),
@@ -100,10 +99,6 @@ namespace Simple.Dotnet.Cloning
             typeof(SpinLock?),
             typeof(SpinWait),
             typeof(SpinWait?),
-            typeof(ConcurrentBag<>),
-            typeof(ConcurrentDictionary<,>),
-            typeof(ConcurrentQueue<>),
-            typeof(ConcurrentStack<>),
             typeof(WaitHandle),
             typeof(RegisteredWaitHandle),
             typeof(EventWaitHandle),
@@ -123,20 +118,6 @@ namespace Simple.Dotnet.Cloning
             typeof(EventInfo),
             typeof(ManifestResourceInfo),
             typeof(ILGenerator),
-
-            // Immutables
-            typeof(ImmutableDictionary<,>),
-            typeof(ImmutableStack<>),
-            typeof(ImmutableSortedSet<>),
-            typeof(ImmutableSortedDictionary<,>),
-            typeof(ImmutableQueue<>),
-            typeof(ImmutableList<>),
-            typeof(ImmutableHashSet<>),
-            typeof(IImmutableDictionary<,>),
-            typeof(IImmutableStack<>),
-            typeof(IImmutableQueue<>),
-            typeof(IImmutableList<>),
-            typeof(IImmutableSet<>),
 
             // Collections
             typeof(LinkedListNode<>), // Cloning will break collection
@@ -199,9 +180,14 @@ namespace Simple.Dotnet.Cloning
 
         public static readonly Dictionary<Type, Func<Type[], MethodInfo>> Custom = new Dictionary<Type, Func<Type[], MethodInfo>>
         {
-            [typeof(LinkedList<>)] = t => LinkedListOpenedMethod.MakeGenericMethod(t),
-            [typeof(Dictionary<,>)] = t => DictionaryOpenedMethod.MakeGenericMethod(t),
-            [typeof(SortedDictionary<,>)] = t => SortedDictionaryOpenedMethod.MakeGenericMethod(t)
+            [typeof(LinkedList<>)] = t => Collections.LinkedListOpenedMethod.MakeGenericMethod(t),
+            [typeof(Dictionary<,>)] = t => Collections.DictionaryOpenedMethod.MakeGenericMethod(t),
+            [typeof(SortedDictionary<,>)] = t => Collections.SortedDictionaryOpenedMethod.MakeGenericMethod(t),
+
+            [typeof(ConcurrentBag<>)] = t => Concurrent.BagOpenedMethod.MakeGenericMethod(t),
+            [typeof(ConcurrentStack<>)] = t => Concurrent.StackOpenedMethod.MakeGenericMethod(t),
+            [typeof(ConcurrentQueue<>)] = t => Concurrent.QueueOpenedMethod.MakeGenericMethod(t),
+            [typeof(ConcurrentDictionary<,>)] = t => Concurrent.DictionaryOpenedMethod.MakeGenericMethod(t),
         };
     }
 }
