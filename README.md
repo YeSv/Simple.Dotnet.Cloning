@@ -58,7 +58,7 @@ public class Quote {
 
 As you can see API is pretty straighforward all you need to do is to use `.ShallowClone()` or `.DeepClone()`. `DeepClone` will clone all the reference types in the whole references tree for both `struct`s and `class`es, while `ShallowClone` will only create a new instance and copy all fields to a new instance of `class` or `struct`.
 
-# 3 How it works
+# 3. How it works
 
 When you first use `ShallowClone` or `DeepClone` a new cloner is generated using `ILGenerator` and cached so next calls to this methods use already generated code, it's super efficient and library tries to generate the code you might wrote by hand yourself. This happens for each field and field's type one by one until the whole method is generated, there are some assumptions that library takes to be able to clone instance of class or struct as efficient as possible, let's discuss it below:
 
@@ -328,7 +328,7 @@ When you first use `ShallowClone` or `DeepClone` a new cloner is generated using
 
     ```
 
-    `Dictionary<TKey, TValue>`/`SortedDictionary<TKey, TValue>`/`LinkedList<T>` are cloned using their APIs in [CustomTypesCloner](https://github.com/YeSv/Simple.Dotnet.Cloning/blob/main/src/Simple.Dotnet.Cloning/Cloners/RecurringTypesCloner.cs)
+    `Dictionary<TKey, TValue>`/`SortedDictionary<TKey, TValue>`/`LinkedList<T>` are cloned using their APIs in [CustomTypesCloner](https://github.com/YeSv/Simple.Dotnet.Cloning/blob/main/src/Simple.Dotnet.Cloning/Cloners/CustomTypesCloner.cs)
 
     You can check benchmark results in the [benchmarks](#5-benchmarks) section.
 
@@ -454,17 +454,23 @@ In short:
 [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet) was used for benchmarking.
 
 [Force](https://github.com/force-net/DeepCloner) was used for both deep and shallow cloning.
+
 [AutoMapper](https://github.com/AutoMapper/AutoMapper) was used for shallow cloning.
-[FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) was used for deep cloning
-[NCloner](https://github.com/mijay/NClone) - was used for deep cloning
-[DeepCopy](https://github.com/ReubenBond/DeepCopy) - was used for deep cloning
+
+[FastDeepCloner](https://github.com/AlenToma/FastDeepCloner) was used for deep cloning.
+
+[NCloner](https://github.com/mijay/NClone) - was used for deep cloning.
+
+[DeepCopy](https://github.com/ReubenBond/DeepCopy) - was used for deep cloning.
 
 Runtime: .NET 5.0
 
 Results:
 
 (+) - winner
+
 (-) - exception
+
 (?) - questionable
 
 1. `HugeStruct` deep clone
@@ -506,7 +512,7 @@ Results:
     |       List_DeepCopyCloner |   10 |   3,971.0 ns |    37.21 ns |    32.98 ns | 1.6403 | 0.0458 |      8 KB |
 ```
 * Actually interesting how `NClone` provided both fastest result and least allocations
-** (?) - FastDeepCloner only allocated 1KB - something is really strange there...
+* (?) - FastDeepCloner only allocated 1KB - something is really strange there...
 
 3. `HugeClass` deep clone (Length - inner collections lengths and string lengths if any)
 ```
@@ -525,7 +531,7 @@ Results:
     |       DeepCopy |     100 |  28,924.61 us |   556.715 us |   641.114 us | 1687.5000 |  687.5000 | 187.5000 |  9,268 KB |
 ```
 * `NCloner` throws an exception when dictionary is used (it finds recursive reference)
-** `DeepCopy` actually achieved very good results
+* `DeepCopy` actually achieved very good results
 
 3. `HugeClass` collections deep clone (Size - collections and inner collections lengths and string lengths if any)
 ```
@@ -556,7 +562,7 @@ Results:
     |       List_DeepCopyCloner |   10 |  1,997.253 us |  15.9839 us |  14.9513 us |  203.1250 | 101.5625 |        - |  1,267 KB |
 ```
 * `NCloner` throws an exception when dictionary is used (it finds recursive reference)
-** `DeepCopy` actually achieved very good results
+* `DeepCopy` actually achieved very good results
 
 4. `SmallClass` deep clone
 ```
@@ -598,7 +604,7 @@ Results:
     |       List_DeepCopyCloner |   10 |     482.9 ns |     1.85 ns |     1.73 ns |     482.8 ns | 0.1307 |      - |     616 B |
 ```
 * `DeepCopy` is really fast actually
-** `Force` achieves nice performance when working with dictionaries
+* `Force` achieves nice performance when working with dictionaries
 
 6. `HugeValueStruct` deep clone
 ```
@@ -650,6 +656,8 @@ It's better to use [DeepCloner](https://github.com/force-net/DeepCloner) or any 
 1. You don't care about performance
 2. You use recursive types and don't want to write cloners for those types
 3. Some of types you clone are non-abstract and casted to base class (described in this [section](#3-how-it-works))
+4. You don't care about additional allocations
+5. You need reference tracking, for example cloning an array with the same objects will produce another array with different cloned objects, but you need another array with new objects with the same references
 
 # 7. Suggestions
 
