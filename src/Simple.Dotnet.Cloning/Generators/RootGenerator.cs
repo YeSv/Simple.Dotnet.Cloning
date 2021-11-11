@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -7,8 +9,8 @@ namespace Simple.Dotnet.Cloning.Generators
     internal static class RootGenerator
     {
         static readonly Type ObjectType = typeof(object);
-        static readonly Func<Type, FieldInfo[]> FieldsLazy = type => type.GetFields(FieldFlags);
-        static readonly BindingFlags FieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public;
+        static readonly Func<Type, IEnumerable<FieldInfo>> FieldsLazy = type => GetFields(type);
+        static readonly BindingFlags FieldFlags = BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.DeclaredOnly;
 
         public static ILGenerator Deep(this ILGenerator generator, Type type)
         {
@@ -53,6 +55,26 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Emit(OpCodes.Ret); // Return loaded value
 
             return generator;
+        }
+
+        static IEnumerable<FieldInfo> GetFields(Type type)
+        {
+            if (type.IsValueType) return type.GetFields(FieldFlags);
+
+            return GetHierarchyFields(type);
+
+            static IEnumerable<FieldInfo> GetHierarchyFields(Type type)
+            {
+                var current = type;
+                do
+                {
+                    var fields = current.GetFields(FieldFlags);
+                    for (var i = 0; i < fields.Length; i++) yield return fields[i];
+
+                    current = current.BaseType;
+                } while (current != ObjectType && current != null);
+            }
+            
         }
     }
 }

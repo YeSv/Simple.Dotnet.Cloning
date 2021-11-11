@@ -1,5 +1,6 @@
 ﻿using Simple.Dotnet.Cloning.Cloners;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -18,7 +19,7 @@ namespace Simple.Dotnet.Cloning.Generators
             nameof(MemberwiseClone), 
             BindingFlags.Instance | BindingFlags.NonPublic);
 
-        public static ILGenerator CopyArray(this ILGenerator generator, Type type, Func<Type, FieldInfo[]> fields, bool deep = true)
+        public static ILGenerator CopyArray(this ILGenerator generator, Type type, Func<Type, IEnumerable<FieldInfo>> fields, bool deep = true)
         {
             var nullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();

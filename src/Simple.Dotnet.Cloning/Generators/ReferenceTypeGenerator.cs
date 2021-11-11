@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -7,7 +8,7 @@ namespace Simple.Dotnet.Cloning.Generators
 {
     internal static class ReferenceTypeGenerator
     {
-        public static ILGenerator CopyReferenceType(this ILGenerator generator, Type type, FieldInfo[] fields)
+        public static ILGenerator CopyReferenceType(this ILGenerator generator, Type type, IEnumerable<FieldInfo> fields)
         {
             var notNullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();
@@ -32,7 +33,7 @@ namespace Simple.Dotnet.Cloning.Generators
             return generator;
         }
 
-        public static ILGenerator ShallowCopyReferenceType(this ILGenerator generator, Type type, FieldInfo[] fields)
+        public static ILGenerator ShallowCopyReferenceType(this ILGenerator generator, Type type, IEnumerable<FieldInfo> fields)
         {
             var notNullLabel = generator.DefineLabel();
             var exitLabel = generator.DefineLabel();
