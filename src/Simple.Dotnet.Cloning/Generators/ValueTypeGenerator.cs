@@ -2,12 +2,13 @@
 using System.Reflection.Emit;
 using System.Linq;
 using System.Reflection;
+using System.Collections.Generic;
 
 namespace Simple.Dotnet.Cloning.Generators
 {
     internal static class ValueTypeGenerator
     {
-        public static ILGenerator CopyValueType(this ILGenerator generator, Type type, Func<Type, FieldInfo[]> fieldsLazy)
+        public static ILGenerator CopyValueType(this ILGenerator generator, Type type, Func<Type, IEnumerable<FieldInfo>> fieldsLazy)
         {
             // For nullable - use special handling
             var nullableInnerType = Nullable.GetUnderlyingType(type);

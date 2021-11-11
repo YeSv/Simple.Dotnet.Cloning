@@ -14,18 +14,18 @@ namespace Simple.Dotnet.Cloning.Tests.Records
         [Fact]
         public void ShallowClone_Should_Produce_The_Same_Data()
         {
+            IsCloned(SmallClassGenerator.Generate()).Should().BeTrue();
             IsCloned(HugeClassGenerator.Generate(10, 10)).Should().BeTrue();
             IsCloned(ModerateClassGenerator.Generate(10, 10)).Should().BeTrue();
-            IsCloned(SmallClassGenerator.Generate()).Should().BeTrue();
             IsCloned(StringsSmallClassGenerator.Generate(10)).Should().BeTrue();
         }
 
         [Fact]
         public void DeepClone_Should_Produce_The_Same_Data()
         {
+            IsCloned(SmallClassGenerator.Generate(), true).Should().BeTrue();
             IsCloned(HugeClassGenerator.Generate(10, 10), true).Should().BeTrue();
             IsCloned(ModerateClassGenerator.Generate(10, 10), true).Should().BeTrue();
-            IsCloned(SmallClassGenerator.Generate(), true).Should().BeTrue();
             IsCloned(StringsSmallClassGenerator.Generate(10), true).Should().BeTrue();
         }
 
