@@ -1,5 +1,5 @@
 ## NuGet
-[Simple.Dotnet.Cloning (yet to be created)](https://www.nuget.org/packages/Simple.Dotnet.Cloning/)
+[Simple.Dotnet.Cloning](https://www.nuget.org/packages/Simple.Dotnet.Cloning/)
 
 ## Table of contents
 1. [Motivation](#1-motivation)
