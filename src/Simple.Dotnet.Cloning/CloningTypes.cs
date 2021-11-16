@@ -1,5 +1,4 @@
-﻿using Simple.Dotnet.Cloning.Cloners;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
@@ -34,6 +33,10 @@ namespace Simple.Dotnet.Cloning
             typeof(int?),
             typeof(uint),
             typeof(uint?),
+            typeof(nint),
+            typeof(nint?),
+            typeof(nuint),
+            typeof(nuint?),
             typeof(long),
             typeof(long?),
             typeof(ulong),
@@ -168,13 +171,13 @@ namespace Simple.Dotnet.Cloning
             typeof(Range?),
             #endif
 
-            // Net 5 +
-            #if NET5_0_OR_GREATER
-            typeof(ProfileOptimization),
-            typeof(ComWrappers.ComInterfaceDispatch),
-            typeof(ComWrappers.ComInterfaceDispatch?),
-            typeof(ComWrappers.ComInterfaceEntry),
-            typeof(ComWrappers.ComInterfaceEntry?),
+            // Net 6 +
+            #if NET6_0_OR_GREATER
+            typeof(DateOnly),
+            typeof(DateOnly?),
+            typeof(TimeOnly),
+            typeof(TimeOnly?),
+            typeof(PriorityQueue<,>.UnorderedItemsCollection), // Will break the collection
             #endif
         };
 
@@ -183,6 +186,10 @@ namespace Simple.Dotnet.Cloning
             [typeof(LinkedList<>)] = t => Collections.LinkedListOpenedMethod.MakeGenericMethod(t),
             [typeof(Dictionary<,>)] = t => Collections.DictionaryOpenedMethod.MakeGenericMethod(t),
             [typeof(SortedDictionary<,>)] = t => Collections.SortedDictionaryOpenedMethod.MakeGenericMethod(t),
+
+            #if NET6_0_OR_GREATER
+            [typeof(PriorityQueue<,>)] = t => Collections.PriorityQueueOpenedMethod.MakeGenericMethod(t),
+            #endif
 
             [typeof(ConcurrentBag<>)] = t => Concurrent.BagOpenedMethod.MakeGenericMethod(t),
             [typeof(ConcurrentStack<>)] = t => Concurrent.StackOpenedMethod.MakeGenericMethod(t),

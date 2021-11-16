@@ -8,7 +8,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 {
     internal static class RootCloner<T>
     {
-        delegate T CloneDelegate(T instance);
+        delegate T? CloneDelegate(T? instance);
 
         static readonly Type Type = typeof(T);
         static readonly Module ClonerModule = typeof(Cloner).Module;
@@ -17,10 +17,10 @@ namespace Simple.Dotnet.Cloning.Cloners
         static readonly CloneDelegate ShallowCloner = CreateShallowCloner();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T DeepClone(T instance) => DeepCloner(instance);
+        public static T? DeepClone(T? instance) => DeepCloner(instance);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T ShallowClone(T instance) => ShallowCloner(instance);
+        public static T? ShallowClone(T? instance) => ShallowCloner(instance);
 
         static CloneDelegate CreateShallowCloner()
         {
