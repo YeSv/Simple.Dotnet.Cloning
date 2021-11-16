@@ -41,7 +41,7 @@ namespace Simple.Dotnet.Cloning.Cloners
             public static Dictionary<TKey, TValue>? CloneDictionary<TKey, TValue>(Dictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
-                if (dictionary.Count == 0) return new();
+                if (dictionary.Count == 0) return new(dictionary.Comparer);
 
                 var clone = new Dictionary<TKey, TValue>(dictionary.Count, dictionary.Comparer);
                 foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key)!, RootCloner<TValue>.DeepClone(element.Value));
@@ -52,7 +52,7 @@ namespace Simple.Dotnet.Cloning.Cloners
             public static SortedDictionary<TKey, TValue>? CloneSortedDictionary<TKey, TValue>(SortedDictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
-                if (dictionary.Count == 0) return new();
+                if (dictionary.Count == 0) return new(dictionary.Comparer);
 
                 var clone = new SortedDictionary<TKey, TValue>(dictionary.Comparer);
                 foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key)!, RootCloner<TValue>.DeepClone(element.Value)!);
@@ -64,7 +64,7 @@ namespace Simple.Dotnet.Cloning.Cloners
             public static PriorityQueue<TElement, TPriority>? ClonePriorityQueue<TElement, TPriority>(PriorityQueue<TElement, TPriority>? priorityQueue)
             {
                 if (priorityQueue == null) return null;
-                if (priorityQueue.Count == 0) return null;
+                if (priorityQueue.Count == 0) return new(priorityQueue.Comparer);
 
                 var clone = new PriorityQueue<TElement, TPriority>(priorityQueue.Count, priorityQueue.Comparer);
                 foreach (var (item, priority) in priorityQueue.UnorderedItems) clone.Enqueue(RootCloner<TElement>.DeepClone(item)!, RootCloner<TPriority>.DeepClone(priority)!);
@@ -137,9 +137,16 @@ namespace Simple.Dotnet.Cloning.Cloners
             public static ConcurrentDictionary<TKey, TValue>? CloneDictionary<TKey, TValue>(ConcurrentDictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
-                if (dictionary.Count == 0) return new();
 
-                var clone = new ConcurrentDictionary<TKey, TValue>();
+
+                #if NET6_0_OR_GREATER
+                    if (dictionary.Count == 0) return new(dictionary.Comparer);
+                    var clone = new ConcurrentDictionary<TKey, TValue>(dictionary.Comparer);
+                #else
+                    if (dictionary.Count == 0) return new();
+                    var clone = new ConcurrentDictionary<TKey, TValue>();
+                #endif
+
                 foreach (var item in dictionary) clone[RootCloner<TKey>.DeepClone(item.Key)] = RootCloner<TValue>.DeepClone(item.Value);
 
                 return clone;
