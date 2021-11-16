@@ -24,7 +24,7 @@ namespace Simple.Dotnet.Cloning.Generators
             else generator.Emit(OpCodes.Ldarg_0);
 
             generator.Emit(OpCodes.Ldfld, field); // Load field to stack
-            generator.Emit(OpCodes.Call, closedType.GetMethod(nameof(Cloner.DeepClone))); // Call method with 
+            generator.Emit(OpCodes.Call, closedType.GetMethod(nameof(Cloner.DeepClone))!); // Call method with 
             generator.Emit(OpCodes.Stfld, field); // Store value in field of a clone
 
             return generator;

@@ -13,15 +13,21 @@ namespace Simple.Dotnet.Cloning.Cloners
             static readonly Type Type = typeof(Collections);
             public static readonly MethodInfo LinkedListOpenedMethod = Type.GetMethod(
                 nameof(Collections.CloneLinkedList),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
             public static readonly MethodInfo DictionaryOpenedMethod = Type.GetMethod(
                 nameof(Collections.CloneDictionary),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
             public static readonly MethodInfo SortedDictionaryOpenedMethod = Type.GetMethod(
                 nameof(Collections.CloneSortedDictionary),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
 
-            public static LinkedList<T> CloneLinkedList<T>(LinkedList<T> linkedList)
+            #if NET6_0_OR_GREATER
+            public static readonly MethodInfo PriorityQueueOpenedMethod = Type.GetMethod(
+                nameof(Collections.ClonePriorityQueue),
+                BindingFlags.Static | BindingFlags.Public)!;
+            #endif
+
+            public static LinkedList<T>? CloneLinkedList<T>(LinkedList<T>? linkedList)
             {
                 if (linkedList == null) return null;
                 if (linkedList.Count == 0) return new();
@@ -32,27 +38,40 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static Dictionary<TKey, TValue> CloneDictionary<TKey, TValue>(Dictionary<TKey, TValue> dictionary)
+            public static Dictionary<TKey, TValue>? CloneDictionary<TKey, TValue>(Dictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
                 if (dictionary.Count == 0) return new();
 
                 var clone = new Dictionary<TKey, TValue>(dictionary.Count, dictionary.Comparer);
-                foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key), RootCloner<TValue>.DeepClone(element.Value));
+                foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key)!, RootCloner<TValue>.DeepClone(element.Value));
 
                 return clone;
             }
 
-            public static SortedDictionary<TKey, TValue> CloneSortedDictionary<TKey, TValue>(SortedDictionary<TKey, TValue> dictionary)
+            public static SortedDictionary<TKey, TValue>? CloneSortedDictionary<TKey, TValue>(SortedDictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
                 if (dictionary.Count == 0) return new();
 
                 var clone = new SortedDictionary<TKey, TValue>(dictionary.Comparer);
-                foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key), RootCloner<TValue>.DeepClone(element.Value));
+                foreach (var element in dictionary) clone.Add(RootCloner<TKey>.DeepClone(element.Key)!, RootCloner<TValue>.DeepClone(element.Value)!);
 
                 return clone;
             }
+
+            #if NET6_0_OR_GREATER
+            public static PriorityQueue<TElement, TPriority>? ClonePriorityQueue<TElement, TPriority>(PriorityQueue<TElement, TPriority>? priorityQueue)
+            {
+                if (priorityQueue == null) return null;
+                if (priorityQueue.Count == 0) return null;
+
+                var clone = new PriorityQueue<TElement, TPriority>(priorityQueue.Count, priorityQueue.Comparer);
+                foreach (var (item, priority) in priorityQueue.UnorderedItems) clone.Enqueue(RootCloner<TElement>.DeepClone(item)!, RootCloner<TPriority>.DeepClone(priority)!);
+
+                return clone;
+            }
+            #endif
         }
         
         public static class Concurrent
@@ -60,18 +79,18 @@ namespace Simple.Dotnet.Cloning.Cloners
             static readonly Type Type = typeof(Concurrent);
             public static readonly MethodInfo BagOpenedMethod = Type.GetMethod(
                 nameof(Concurrent.CloneBag),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
             public static readonly MethodInfo DictionaryOpenedMethod = Type.GetMethod(
                 nameof(Concurrent.CloneDictionary),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
             public static readonly MethodInfo QueueOpenedMethod = Type.GetMethod(
                 nameof(Concurrent.CloneQueue),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
             public static readonly MethodInfo StackOpenedMethod = Type.GetMethod(
                 nameof(Concurrent.CloneStack),
-                BindingFlags.Static | BindingFlags.Public);
+                BindingFlags.Static | BindingFlags.Public)!;
 
-            public static ConcurrentBag<T> CloneBag<T>(ConcurrentBag<T> bag)
+            public static ConcurrentBag<T>? CloneBag<T>(ConcurrentBag<T>? bag)
             {
                 if (bag == null) return null;
                 if (bag.Count == 0) return new();
@@ -82,7 +101,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static ConcurrentQueue<T> CloneQueue<T>(ConcurrentQueue<T> queue)
+            public static ConcurrentQueue<T>? CloneQueue<T>(ConcurrentQueue<T>? queue)
             {
                 if (queue == null) return null;
                 if (queue.Count == 0) return new();
@@ -93,7 +112,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static ConcurrentStack<T> CloneStack<T>(ConcurrentStack<T> stack)
+            public static ConcurrentStack<T>? CloneStack<T>(ConcurrentStack<T>? stack)
             {
                 if (stack == null) return null;
                 if (stack.Count == 0) return new();
@@ -115,7 +134,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static ConcurrentDictionary<TKey, TValue> CloneDictionary<TKey, TValue>(ConcurrentDictionary<TKey, TValue> dictionary)
+            public static ConcurrentDictionary<TKey, TValue>? CloneDictionary<TKey, TValue>(ConcurrentDictionary<TKey, TValue>? dictionary)
             {
                 if (dictionary == null) return null;
                 if (dictionary.Count == 0) return new();

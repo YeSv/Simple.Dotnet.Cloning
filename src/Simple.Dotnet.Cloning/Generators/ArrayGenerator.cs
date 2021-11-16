@@ -17,7 +17,7 @@ namespace Simple.Dotnet.Cloning.Generators
         static readonly Type FourDimClonerType = typeof(ArrayCloner.FourDim);
         static readonly MethodInfo MemberwiseCloneMethod = ArrayType.GetMethod(
             nameof(MemberwiseClone), 
-            BindingFlags.Instance | BindingFlags.NonPublic);
+            BindingFlags.Instance | BindingFlags.NonPublic)!;
 
         public static ILGenerator CopyArray(this ILGenerator generator, Type type, Func<Type, IEnumerable<FieldInfo>> fields, bool deep = true)
         {
@@ -30,7 +30,7 @@ namespace Simple.Dotnet.Cloning.Generators
             generator.Emit(OpCodes.Brtrue_S, nullLabel); // If equal -> jump to null label
 
             // Not null:
-            var elementType = type.GetElementType(); // Get underlying type
+            var elementType = type.GetElementType()!; // Get underlying type
             var useShallow = !deep 
                 || elementType.IsSafeToCopy() 
                 || (elementType.IsValueType && fields(elementType).All(f => f.FieldType.IsSafeToCopy())); // Check whether it's possible to use shallow clone 
@@ -71,7 +71,7 @@ namespace Simple.Dotnet.Cloning.Generators
         static ILGenerator ShallowClone(this ILGenerator generator, Type elementType, Type clonerType)
         {
             generator.Emit(OpCodes.Ldarg_0); // Load array
-            generator.Emit(OpCodes.Call, clonerType.GetMethod(nameof(ShallowClone), BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(elementType)); // Call shallow clone
+            generator.Emit(OpCodes.Call, clonerType.GetMethod(nameof(ShallowClone), BindingFlags.Public | BindingFlags.Static)!.MakeGenericMethod(elementType)); // Call shallow clone
             generator.Emit(OpCodes.Stloc_0); // Store as a clone
 
             return generator;
@@ -81,7 +81,7 @@ namespace Simple.Dotnet.Cloning.Generators
         static ILGenerator DeepClone(this ILGenerator generator, Type elementType, Type clonerType)
         {
             generator.Emit(OpCodes.Ldarg_0); // Load array
-            generator.Emit(OpCodes.Call, clonerType.GetMethod(nameof(DeepClone), BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(elementType)); // Call deep clone
+            generator.Emit(OpCodes.Call, clonerType.GetMethod(nameof(DeepClone), BindingFlags.Public | BindingFlags.Static)!.MakeGenericMethod(elementType)); // Call deep clone
             generator.Emit(OpCodes.Stloc_0); // Store as a clone
 
             return generator;

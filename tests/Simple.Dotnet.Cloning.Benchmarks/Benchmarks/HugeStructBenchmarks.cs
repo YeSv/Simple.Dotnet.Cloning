@@ -55,6 +55,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
         List<HugeStruct> _list;
         HugeStruct[] _array;
         HashSet<HugeStruct> _hashSet;
+        PriorityQueue<HugeStruct, int> _priorityQueue;
 
         [Params(10)]
         public int Size;
@@ -66,6 +67,7 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
             Warmup.WarmupFor(_hashSet = Enumerable.Range(0, Size).Select(i => HugeStructGenerator.Generate()).ToHashSet());
             Warmup.WarmupFor(_array = Enumerable.Range(0, Size).Select(i => HugeStructGenerator.Generate()).ToArray());
             Warmup.WarmupFor(_list = Enumerable.Range(0, Size).Select(i => HugeStructGenerator.Generate()).ToList());
+            Warmup.WarmupFor(_priorityQueue = new PriorityQueue<HugeStruct, int>(Enumerable.Range(0, Size).Select(i => (HugeStructGenerator.Generate(), i))));
         }
 
         #region Dictionary
@@ -141,6 +143,26 @@ namespace Simple.Dotnet.Cloning.Benchmarks.Benchmarks
 
         [Benchmark]
         public List<HugeStruct> List_DeepCopyCloner() => DeepCopyCloner.DeepClone(_list);
+
+        #endregion
+
+
+        #region PriorityQueue
+
+        [Benchmark]
+        public PriorityQueue<HugeStruct, int> PriorityQueue_Force() => ForceCloner.DeepClone(_priorityQueue);
+
+        [Benchmark]
+        public PriorityQueue<HugeStruct, int> PriorityQueue_Simple() => SimpleCloner.DeepClone(_priorityQueue);
+
+        [Benchmark]
+        public PriorityQueue<HugeStruct, int> PriorityQueue_FastDeepCloner() => FastDeepClonerCloner.DeepClone(_priorityQueue);
+
+        [Benchmark]
+        public PriorityQueue<HugeStruct, int> PriorityQueue_NCloner() => NClonerCloner.DeepClone(_priorityQueue);
+
+        [Benchmark]
+        public PriorityQueue<HugeStruct, int> PriorityQueue_DeepCopyCloner() => DeepCopyCloner.DeepClone(_priorityQueue);
 
         #endregion
     }

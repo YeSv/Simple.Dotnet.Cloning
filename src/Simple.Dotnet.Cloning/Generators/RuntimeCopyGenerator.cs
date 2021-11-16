@@ -10,13 +10,13 @@ namespace Simple.Dotnet.Cloning.Generators
         static readonly Type ObjectType = typeof(object);
         static readonly MethodInfo GetTypeMethod = ObjectType.GetMethod(
             nameof(object.GetType), 
-            BindingFlags.Public | BindingFlags.Instance);
+            BindingFlags.Public | BindingFlags.Instance)!;
         static readonly MethodInfo DeepCloneMethod = typeof(ObjectCloner).GetMethod(
             nameof(ObjectCloner.DeepClone), 
-            BindingFlags.Public | BindingFlags.Static);
+            BindingFlags.Public | BindingFlags.Static)!;
         static readonly MethodInfo ShallowCloneMethod = typeof(ObjectCloner).GetMethod(
             nameof(ObjectCloner.ShallowClone), 
-            BindingFlags.Public | BindingFlags.Static);
+            BindingFlags.Public | BindingFlags.Static)!;
 
         public static ILGenerator CopyObject(this ILGenerator generator, bool deep = true)
         {

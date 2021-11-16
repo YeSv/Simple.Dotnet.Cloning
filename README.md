@@ -402,7 +402,7 @@ Let's say that you have a class that has references to itself, like you wrote yo
     {
         // Cache opened cloner method, required to be used by library
         public static readonly MethodInfo Method = typeof(AvlNodeCloner).GetMethod(
-            nameof(AvlNodeClone.Clone), 
+            nameof(AvlNodeCloner.Clone), 
             BindingFlags.Static | BindingFlags.Public);
 
         // You might better not use a recursion but rather a loop, but such implementation is shorter
@@ -463,7 +463,7 @@ In short:
 
 [DeepCopy](https://github.com/ReubenBond/DeepCopy) - was used for deep cloning.
 
-Runtime: .NET 5.0
+Runtime: .NET 5.0/.NET 6.0
 
 Results:
 
@@ -474,6 +474,8 @@ Results:
 (?) - questionable
 
 1. `HugeStruct` deep clone
+
+.NET 5.0
 ```
     |         Method |         Mean |     Error |    StdDev |  Gen 0 | Allocated |
     |--------------- |-------------:|----------:|----------:|-------:|----------:|
@@ -483,7 +485,22 @@ Results:
     | FastDeepCloner | 15,679.01 ns | 82.525 ns | 73.156 ns | 1.0071 |   4,840 B |
     |       DeepCopy |    252.62 ns |  1.347 ns |  1.260 ns | 0.0372 |     176 B |
 ```
+
+.NET 6.0
+``` 
+    |         Method |          Mean |         Error |        StdDev |        Median |  Gen 0 | Allocated |
+    |--------------- |--------------:|--------------:|--------------:|--------------:|-------:|----------:|
+    |          Force |     370.10 ns |      3.520 ns |      3.120 ns |     369.28 ns | 0.0815 |     384 B |
+ (+)|         Simple |      85.92 ns |      1.626 ns |      2.762 ns |      85.85 ns | 0.0373 |     176 B |
+    |        NCloner |     191.53 ns |      0.519 ns |      0.433 ns |     191.58 ns | 0.0849 |     400 B |
+    | FastDeepCloner |  14,639.44 ns |    129.376 ns |    121.018 ns |  14,619.35 ns | 0.6256 |   2,984 B |
+ (-)|       DeepCopy | 305,436.84 ns | 12,509.280 ns | 36,883.894 ns | 328,330.66 ns |      - |     802 B |
+```
+* For some reason DeepCopy throws an exception for .NET 6.0
+
 2. `HugeStruct` collections deep clone (Size - collection's length and string lengths if any)
+
+.NET 5.0
 ```
     |                    Method | Size |         Mean |       Error |      StdDev |  Gen 0 |  Gen 1 | Allocated |
     |-------------------------- |----- |-------------:|------------:|------------:|-------:|-------:|----------:|
@@ -512,9 +529,48 @@ Results:
     |       List_DeepCopyCloner |   10 |   3,971.0 ns |    37.21 ns |    32.98 ns | 1.6403 | 0.0458 |      8 KB |
 ```
 * Actually interesting how `NClone` provided both fastest result and least allocations
-* (?) - FastDeepCloner only allocated 1KB - something is really strange there...
+* (?) - `FastDeepCloner` only allocated 1KB - something is really strange there...
+
+.NET 6.0
+```
+    |                       Method | Size |         Mean |       Error |       StdDev |  Gen 0 |  Gen 1 | Allocated |
+    |----------------------------- |----- |-------------:|------------:|-------------:|-------:|-------:|----------:|
+    |             Dictionary_Force |   10 |   6,642.6 ns |    19.62 ns |     18.35 ns | 1.8463 | 0.0687 |      8 KB |
+ (+)|            Dictionary_Simple |   10 |   2,186.8 ns |     9.51 ns |      8.90 ns | 0.7668 | 0.0191 |      4 KB |
+    |    Dictionary_FastDeepCloner |   10 |   2,524.6 ns |    49.26 ns |     54.75 ns | 1.4687 | 0.0305 |      7 KB |
+ (-)|           Dictionary_NCloner |   10 | 309,856.2 ns | 6,165.74 ns |  7,339.88 ns | 0.9766 |      - |      5 KB |
+ (-)|    Dictionary_DeepCopyCloner |   10 | 316,303.8 ns | 6,075.77 ns | 12,815.86 ns | 0.4883 |      - |      4 KB |
+
+    |                  Array_Force |   10 |   3,855.8 ns |    73.22 ns |     68.49 ns | 1.4191 | 0.0381 |      7 KB |
+    |                 Array_Simple |   10 |     957.0 ns |     3.43 ns |      3.21 ns | 0.6676 | 0.0153 |      3 KB |
+    |         Array_FastDeepCloner |   10 |   8,513.0 ns |    58.66 ns |     52.00 ns | 1.2054 | 0.0153 |      6 KB |
+ (+)|                Array_NCloner |   10 |     241.5 ns |     1.85 ns |      1.64 ns | 0.3467 | 0.0038 |      2 KB |
+ (-)|         Array_DeepCopyCloner |   10 | 326,637.4 ns | 6,510.80 ns | 16,689.67 ns | 0.4883 |      - |      2 KB |
+
+    |                HashSet_Force |   10 |   6,398.6 ns |   126.78 ns |    155.70 ns | 1.7776 | 0.0610 |      8 KB |
+    |               HashSet_Simple |   10 |   2,411.0 ns |    43.73 ns |     40.90 ns | 0.9308 | 0.0267 |      4 KB |
+ (?)|       HashSet_FastDeepCloner |   10 |   1,557.5 ns |    23.06 ns |     21.57 ns | 0.2365 |      - |      1 KB |
+ (+)|              HashSet_NCloner |   10 |   1,505.3 ns |    23.53 ns |     19.65 ns | 0.8907 | 0.0172 |      4 KB |
+ (-)|       HashSet_DeepCopyCloner |   10 | 310,938.0 ns | 6,184.53 ns |  9,986.86 ns | 0.4883 |      - |      4 KB |
+
+    |                   List_Force |   10 |   3,980.8 ns |    77.53 ns |     98.05 ns | 1.4267 | 0.0381 |      7 KB |
+    |                  List_Simple |   10 |     998.6 ns |    18.82 ns |     19.33 ns | 0.6733 | 0.0153 |      3 KB |
+    |          List_FastDeepCloner |   10 |   5,028.7 ns |   100.49 ns |     94.00 ns | 1.7166 | 0.0305 |      8 KB |
+ (+)|                 List_NCloner |   10 |     722.0 ns |     4.96 ns |      4.64 ns | 0.4549 |      - |      2 KB |
+ (-)|          List_DeepCopyCloner |   10 | 316,557.3 ns | 6,192.78 ns | 11,007.65 ns | 0.4883 |      - |      3 KB |
+
+    |          PriorityQueue_Force |   10 |   5,997.1 ns |    75.34 ns |     70.48 ns | 1.7319 | 0.0610 |      8 KB |
+ (+)|         PriorityQueue_Simple |   10 |   1,843.3 ns |     4.24 ns |      3.31 ns | 0.6943 | 0.0153 |      3 KB |
+ (?)| PriorityQueue_FastDeepCloner |   10 |   1,864.2 ns |     2.82 ns |      2.36 ns | 0.2346 |      - |      1 KB |
+ (-)|        PriorityQueue_NCloner |   10 | 311,372.6 ns | 6,119.14 ns |  9,344.57 ns | 0.4883 |      - |      4 KB |
+ (-)| PriorityQueue_DeepCopyCloner |   10 | 316,829.2 ns | 6,294.46 ns | 12,857.92 ns | 0.4883 |      - |      4 KB |
+```
+* `DeepCopy` started to throw exceptions in .NET 6.0, same for priority queues, not sure why
+* `FastDeepCloner` allocated only 1KB for priority queue (strange)
 
 3. `HugeClass` deep clone (Length - inner collections lengths and string lengths if any)
+
+NET 5.0
 ```
     |         Method | Lengths |          Mean |        Error |       StdDev |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
     |--------------- |-------- |--------------:|-------------:|-------------:|----------:|----------:|---------:|----------:|
@@ -533,7 +589,27 @@ Results:
 * `NCloner` throws an exception when dictionary is used (it finds recursive reference)
 * `DeepCopy` actually achieved very good results
 
+NET 6.0
+```
+    |         Method | Lengths |          Mean |        Error |       StdDev |        Median |     Gen 0 |     Gen 1 |    Gen 2 | Allocated |
+    |--------------- |-------- |--------------:|-------------:|-------------:|--------------:|----------:|----------:|---------:|----------:|
+    |          Force |      10 |     246.61 us |     4.749 us |     5.082 us |     245.80 us |   61.2793 |   26.1230 |        - |    299 KB |
+ (+)|         Simple |      10 |      56.48 us |     1.095 us |     1.570 us |      56.37 us |   25.3906 |    8.4229 |        - |    123 KB |
+ (-)|        NCloner |      10 |     333.76 us |     6.661 us |    18.678 us |     328.10 us |   11.2305 |    0.4883 |        - |     52 KB |
+    | FastDeepCloner |      10 |   3,742.95 us |    34.671 us |    30.735 us |   3,735.12 us |  117.1875 |   39.0625 |        - |    552 KB |
+ (-)|       DeepCopy |      10 |     323.59 us |     6.397 us |    14.041 us |     320.66 us |    9.7656 |    0.9766 |        - |     46 KB |
+
+    |          Force |     100 |  59,808.78 us | 1,170.242 us | 1,955.212 us |  60,112.30 us | 2444.4444 | 1000.0000 | 333.3333 | 23,476 KB |
+ (+)|         Simple |     100 |  17,889.61 us |   351.328 us |   514.972 us |  17,815.28 us | 1687.5000 |  687.5000 | 187.5000 |  9,222 KB |
+ (-)|        NCloner |     100 |   1,066.79 us |     8.519 us |     7.552 us |   1,067.84 us |   58.5938 |   23.4375 |   1.9531 |    448 KB |
+    | FastDeepCloner |     100 | 212,943.08 us | 4,216.470 us | 5,910.901 us | 210,240.73 us | 4333.3333 | 1000.0000 |        - | 26,800 KB |
+ (-)|       DeepCopy |     100 |   6,212.48 us |    49.283 us |    41.154 us |   6,203.93 us |  507.8125 |  250.0000 |        - |  3,116 KB |
+```
+* Both `NCloner` and `DeepCopy` throw an exception
+
 3. `HugeClass` collections deep clone (Size - collections and inner collections lengths and string lengths if any)
+
+.NET 5.0
 ```
     |                    Method | Size |          Mean |       Error |      StdDev |     Gen 0 |    Gen 1 |    Gen 2 | Allocated |
     |-------------------------- |----- |--------------:|------------:|------------:|----------:|---------:|---------:|----------:|
@@ -564,7 +640,46 @@ Results:
 * `NCloner` throws an exception when dictionary is used (it finds recursive reference)
 * `DeepCopy` actually achieved very good results
 
+.NET 6.0
+```
+    |                       Method | Size |          Mean |       Error |      StdDev |        Median |    Gen 0 |    Gen 1 |    Gen 2 | Allocated |
+    |----------------------------- |----- |--------------:|------------:|------------:|--------------:|---------:|---------:|---------:|----------:|
+    |             Dictionary_Force |   10 |  6,407.798 us | 124.9672 us | 122.7345 us |  6,375.252 us | 398.4375 | 203.1250 |  70.3125 |  2,891 KB |
+ (+)|            Dictionary_Simple |   10 |    840.390 us |   2.4221 us |   1.8910 us |    840.362 us | 200.1953 |  99.6094 |        - |  1,227 KB |
+    |    Dictionary_FastDeepCloner |   10 | 36,253.690 us | 144.1847 us | 120.4008 us | 36,261.957 us | 857.1429 | 142.8571 |        - |  5,509 KB |
+ (-)|           Dictionary_NCloner |   10 |    372.907 us |   8.5906 us |  25.3295 us |    368.950 us |   0.4883 |        - |        - |      3 KB |
+ (-)|    Dictionary_DeepCopyCloner |   10 |    366.285 us |   7.3173 us |  19.5314 us |    362.362 us |        - |        - |        - |      2 KB |
+
+    |                  Array_Force |   10 |  6,318.641 us |  92.7385 us |  77.4409 us |  6,314.989 us | 421.8750 | 226.5625 | 101.5625 |  2,890 KB |
+ (+)|                 Array_Simple |   10 |    840.334 us |   9.2891 us |   8.6890 us |    836.045 us | 200.1953 |  99.6094 |        - |  1,227 KB |
+    |         Array_FastDeepCloner |   10 | 35,439.384 us | 466.3700 us | 436.2428 us | 35,642.443 us | 857.1429 | 142.8571 |        - |  5,510 KB |
+ (-)|                Array_NCloner |   10 |    351.482 us |   5.0105 us |   9.6535 us |    349.513 us |  11.2305 |   0.4883 |        - |     53 KB |
+ (-)|         Array_DeepCopyCloner |   10 |    370.436 us |   7.5930 us |  22.3882 us |    364.443 us |   9.7656 |   0.9766 |        - |     46 KB |
+
+    |                HashSet_Force |   10 |  6,479.709 us | 129.3533 us | 229.9253 us |  6,490.867 us | 398.4375 | 203.1250 |  70.3125 |  2,889 KB |
+ (+)|              HashSet_Simple  |   10 |    837.672 us |  10.5831 us |   9.8994 us |    841.554 us | 200.1953 |  99.6094 |        - |  1,227 KB |
+ (?)|       HashSet_FastDeepCloner |   10 |      1.488 us |   0.0061 us |   0.0047 us |      1.488 us |   0.2365 |        - |        - |      1 KB |
+ (-)|              HashSet_NCloner |   10 |      1.329 us |   0.0078 us |   0.0066 us |      1.329 us |   0.4292 |   0.0019 |        - |      2 KB |
+ (-)|       HashSet_DeepCopyCloner |   10 |    390.731 us |   7.7405 us |  13.3521 us |    391.424 us |        - |        - |        - |      2 KB |
+
+    |                   List_Force |   10 |  6,539.117 us | 129.6200 us | 243.4578 us |  6,521.324 us | 398.4375 | 203.1250 |  70.3125 |  2,890 KB |
+ (+)|                  List_Simple |   10 |    851.304 us |   9.4370 us |   8.8274 us |    853.590 us | 200.1953 |  99.6094 |        - |  1,227 KB |
+    |          List_FastDeepCloner |   10 | 35,553.589 us | 269.1843 us | 251.7952 us | 35,661.879 us | 857.1429 | 142.8571 |        - |  5,510 KB |
+ (-)|                 List_NCloner |   10 |    388.135 us |   7.3139 us |   7.5109 us |    389.578 us |  11.2305 |   0.4883 |        - |     53 KB |
+ (-)|          List_DeepCopyCloner |   10 |    389.603 us |   7.7018 us |  12.2158 us |    389.014 us |  10.2539 |   0.9766 |        - |     47 KB |
+
+    |          PriorityQueue_Force |   10 |  6,482.913 us | 127.8587 us | 183.3712 us |  6,460.658 us | 398.4375 | 203.1250 |  70.3125 |  2,889 KB |
+ (+)|         PriorityQueue_Simple |   10 |    827.889 us |   6.4662 us |   6.0485 us |    827.730 us | 200.1953 |  99.6094 |        - |  1,227 KB |
+ (-)| PriorityQueue_FastDeepCloner |   10 |      1.904 us |   0.0058 us |   0.0052 us |      1.904 us |   0.2327 |        - |        - |      1 KB |
+ (-)|        PriorityQueue_NCloner |   10 |    389.114 us |   7.5985 us |   7.4628 us |    389.804 us |        - |        - |        - |      2 KB |
+ (-)| PriorityQueue_DeepCopyCloner |   10 |    346.529 us |   6.9098 us |  12.2822 us |    350.123 us |        - |        - |        - |      2 KB |
+```
+* `DeepCopy` and `NCloner` throw exceptions in .NET 6.0
+* Three cloners failed to deep clone `PriorityQueue` introduced in .NET 6.0
+
 4. `SmallClass` deep clone
+
+.NET 5.0
 ```
     |         Method |         Mean |     Error |    StdDev |  Gen 0 | Allocated |
     |--------------- |-------------:|----------:|----------:|-------:|----------:|
@@ -575,7 +690,20 @@ Results:
     |       DeepCopy |    24.448 ns | 0.0712 ns | 0.0666 ns | 0.0102 |      48 B |
 ```
 
+.NET 6.0
+```
+    |         Method |         Mean |      Error |     StdDev |  Gen 0 | Allocated |
+    |--------------- |-------------:|-----------:|-----------:|-------:|----------:|
+    |          Force |    75.654 ns |  1.3578 ns |  1.1338 ns | 0.0391 |     184 B |
+ (+)|         Simple |     4.715 ns |  0.0354 ns |  0.0331 ns | 0.0102 |      48 B |
+    |        NCloner |   446.637 ns |  7.2402 ns |  6.4182 ns | 0.1135 |     536 B |
+    | FastDeepCloner | 1,779.593 ns | 28.4831 ns | 33.9071 ns | 0.2499 |   1,184 B |
+    |       DeepCopy |    30.458 ns |  0.5838 ns |  0.5461 ns | 0.0102 |      48 B |
+```
+
 5. `SmallClass` collections deep clone (Size - collection's size)
+
+.NET 5.0
 ```
     |                    Method | Size |         Mean |       Error |      StdDev |       Median |  Gen 0 |  Gen 1 | Allocated |
     |-------------------------- |----- |-------------:|------------:|------------:|-------------:|-------:|-------:|----------:|
@@ -606,7 +734,44 @@ Results:
 * `DeepCopy` is really fast actually
 * `Force` achieves nice performance when working with dictionaries
 
+.NET 6.0
+```
+    |                       Method | Size |         Mean |       Error |       StdDev |       Median |  Gen 0 |  Gen 1 | Allocated |
+    |----------------------------- |----- |-------------:|------------:|-------------:|-------------:|-------:|-------:|----------:|
+    |             Dictionary_Force |   10 |   1,947.0 ns |    30.92 ns |     28.92 ns |   1,951.4 ns | 0.6332 |      - |   2,992 B |
+ (+)|            Dictionary_Simple |   10 |     442.2 ns |     6.95 ns |      5.80 ns |     440.9 ns | 0.1955 | 0.0010 |     920 B |
+    |    Dictionary_FastDeepCloner |   10 |  18,991.3 ns |   373.14 ns |    349.03 ns |  18,993.9 ns | 1.0376 |      - |   4,904 B |
+ (-)|           Dictionary_NCloner |   10 | 393,544.6 ns | 7,830.56 ns | 21,698.44 ns | 395,785.5 ns | 0.4883 |      - |   3,408 B |
+    |    Dictionary_DeepCopyCloner |   10 |   2,381.5 ns |    46.90 ns |     89.22 ns |   2,348.1 ns | 0.6714 | 0.0038 |   3,176 B |
+
+    |                  Array_Force |   10 |   1,025.9 ns |    19.57 ns |     31.04 ns |   1,030.6 ns | 0.3281 | 0.0019 |   1,552 B |
+ (+)|                 Array_Simple |   10 |     133.3 ns |     2.74 ns |      5.21 ns |     133.0 ns | 0.1240 |      - |     584 B |
+    |         Array_FastDeepCloner |   10 |  25,395.7 ns |   479.17 ns |    512.71 ns |  25,557.0 ns | 1.2512 |      - |   5,896 B |
+    |                Array_NCloner |   10 |   4,948.3 ns |    98.52 ns |    150.45 ns |   4,947.2 ns | 1.0910 | 0.0076 |   5,136 B |
+    |         Array_DeepCopyCloner |   10 |     405.7 ns |     5.70 ns |      5.60 ns |     404.1 ns | 0.1240 |      - |     584 B |
+
+    |                HashSet_Force |   10 |   1,320.0 ns |     7.61 ns |      7.12 ns |   1,319.4 ns | 0.4196 |      - |   1,976 B |
+ (+)|               HashSet_Simple |   10 |     303.3 ns |     1.09 ns |      1.02 ns |     303.5 ns | 0.1988 | 0.0010 |     936 B |
+    |       HashSet_FastDeepCloner |   10 |   1,469.5 ns |     5.12 ns |      4.79 ns |   1,470.0 ns | 0.2365 |      - |   1,120 B |
+    |              HashSet_NCloner |   10 |   1,327.5 ns |     7.36 ns |      6.52 ns |   1,328.1 ns | 0.4292 |      - |   2,024 B |
+    |       HashSet_DeepCopyCloner |   10 |   1,775.7 ns |     2.88 ns |      2.56 ns |   1,775.2 ns | 0.5455 |      - |   2,568 B |
+
+    |                   List_Force |   10 |   1,046.7 ns |     3.46 ns |      3.23 ns |   1,047.5 ns | 0.3414 |      - |   1,608 B |
+ (+)|                  List_Simple |   10 |     134.7 ns |     0.45 ns |      0.43 ns |     134.8 ns | 0.1309 |      - |     616 B |
+    |          List_FastDeepCloner |   10 |  20,902.7 ns |   227.69 ns |    212.98 ns |  20,954.9 ns | 1.2207 |      - |   5,808 B |
+    |                 List_NCloner |   10 |   5,222.1 ns |    87.97 ns |     90.34 ns |   5,184.0 ns | 1.1444 |      - |   5,400 B |
+    |          List_DeepCopyCloner |   10 |     456.2 ns |     1.17 ns |      1.09 ns |     456.3 ns | 0.1307 |      - |     616 B |
+
+    |          PriorityQueue_Force |   10 |   1,415.5 ns |     4.21 ns |      3.73 ns |   1,415.4 ns | 0.4025 |      - |   1,896 B |
+ (+)|         PriorityQueue_Simple |   10 |     286.3 ns |     0.98 ns |      0.77 ns |     286.2 ns | 0.1512 |      - |     712 B |
+    | PriorityQueue_FastDeepCloner |   10 |   1,850.4 ns |     4.62 ns |      4.09 ns |   1,851.0 ns | 0.2346 |      - |   1,104 B |
+ (-)|        PriorityQueue_NCloner |   10 | 388,802.2 ns | 7,727.50 ns | 16,467.94 ns | 396,128.3 ns |      - |      - |   1,768 B |
+    | PriorityQueue_DeepCopyCloner |   10 |   1,748.1 ns |     7.50 ns |      6.26 ns |   1,749.6 ns | 0.5016 |      - |   2,368 B |
+```
+
 6. `HugeValueStruct` deep clone
+
+.NET 5.0
 ```
     |         Method |        Mean |     Error |    StdDev |  Gen 0 | Allocated |
     |--------------- |------------:|----------:|----------:|-------:|----------:|
@@ -618,7 +783,21 @@ Results:
 ```
 * You see allocated here because one of fields is `BigInteger` which contains array
 
+.NET 6.0
+```
+    |         Method |          Mean |        Error |        StdDev |  Gen 0 | Allocated |
+    |--------------- |--------------:|-------------:|--------------:|-------:|----------:|
+    |          Force |     270.72 ns |     1.263 ns |      1.181 ns | 0.0544 |     256 B |
+ (+)|         Simple |      67.30 ns |     0.334 ns |      0.296 ns | 0.0085 |      40 B |
+    |        NCloner |     180.48 ns |     0.824 ns |      0.771 ns | 0.0865 |     408 B |
+    | FastDeepCloner |   6,210.64 ns |    25.510 ns |     21.302 ns | 0.4120 |   1,968 B |
+ (-)|       DeepCopy | 388,858.32 ns | 8,306.689 ns | 24,492.460 ns |      - |     800 B |
+```
+* You see allocated here because one of fields is `BigInteger` which contains array
+
 7. `SmallStruct` deep clone (test that cloner does not allocate anything when structs without reference types or structs that contain references are cloned)
+
+.NET 5.0
 ```
     |         Method |       Mean |      Error |     StdDev |  Gen 0 | Allocated |
     |--------------- |-----------:|-----------:|-----------:|-------:|----------:|
@@ -628,7 +807,21 @@ Results:
     | FastDeepCloner | 983.546 ns | 15.7042 ns | 14.6897 ns | 0.2441 |   1,152 B |
     |       DeepCopy |  18.340 ns |  0.0606 ns |  0.0567 ns |      - |         - |
 ```
+
+.NET 6.0
+```
+    |         Method |       Mean |      Error |     StdDev |  Gen 0 | Allocated |
+    |--------------- |-----------:|-----------:|-----------:|-------:|----------:|
+    |          Force |  17.641 ns |  0.2279 ns |  0.2132 ns |      - |         - |
+ (+)|         Simple |   3.437 ns |  0.0230 ns |  0.0192 ns |      - |         - |
+    |        NCloner | 126.416 ns |  2.4547 ns |  3.1918 ns | 0.0627 |     296 B |
+    | FastDeepCloner | 962.532 ns | 17.3214 ns | 17.0120 ns | 0.2441 |   1,152 B |
+    |       DeepCopy |  22.674 ns |  0.1008 ns |  0.0841 ns |      - |         - |
+```
+
 8. `HugeClass` shallow clone (I guess AutoMapper just returns the same instance, still `Simple` is faster)
+
+.NET 5.0
 ```
     |     Method | Lengths |     Mean |    Error |   StdDev |  Gen 0 |  Gen 1 | Allocated |
     |----------- |-------- |---------:|---------:|---------:|-------:|-------:|----------:|
@@ -640,14 +833,40 @@ Results:
     |      Force |     100 | 94.41 ns | 1.626 ns | 1.521 ns | 0.1564 | 0.0004 |     736 B |
  (+)|     Simple |     100 | 68.39 ns | 0.916 ns | 0.857 ns | 0.1564 | 0.0004 |     736 B |
 ```
+
+.NET 6.0
+```
+    |     Method | Lengths |      Mean |    Error |   StdDev |  Gen 0 |  Gen 1 | Allocated |
+    |----------- |-------- |----------:|---------:|---------:|-------:|-------:|----------:|
+ (?)| AutoMapper |      10 |  90.18 ns | 0.229 ns | 0.214 ns |      - |      - |         - |
+    |      Force |      10 |  96.91 ns | 1.992 ns | 3.885 ns | 0.1564 | 0.0004 |     736 B |
+ (+)|     Simple |      10 |  67.59 ns | 1.399 ns | 2.219 ns | 0.1564 |      - |     736 B |
+
+ (?)| AutoMapper |     100 |  93.93 ns | 1.609 ns | 1.426 ns |      - |      - |         - |
+    |      Force |     100 | 100.24 ns | 1.942 ns | 2.785 ns | 0.1564 | 0.0004 |     736 B |
+ (+)|     Simple |     100 |  66.89 ns | 1.310 ns | 1.161 ns | 0.1564 | 0.0004 |     736 B |
+```
+
 9. `SmallClass` shallow clone
+
+.NET 5.0
 ```
     |     Method |      Mean |     Error |    StdDev |  Gen 0 | Allocated |
     |----------- |----------:|----------:|----------:|-------:|----------:|
-    | AutoMapper | 92.138 ns | 0.8030 ns | 0.7119 ns |      - |         - |
+ (?)| AutoMapper | 92.138 ns | 0.8030 ns | 0.7119 ns |      - |         - |
     |      Force | 47.838 ns | 0.6368 ns | 0.5957 ns | 0.0102 |      48 B |
  (+)|     Simple |  4.795 ns | 0.0997 ns | 0.0884 ns | 0.0102 |      48 B |
 ```
+
+.NET 6.0
+```
+    |     Method |      Mean |     Error |    StdDev |  Gen 0 | Allocated |
+    |----------- |----------:|----------:|----------:|-------:|----------:|
+ (?)| AutoMapper | 96.212 ns | 1.4789 ns | 1.3110 ns |      - |         - |
+    |      Force | 52.104 ns | 0.9383 ns | 1.0040 ns | 0.0102 |      48 B |
+ (+)|     Simple |  4.746 ns | 0.0702 ns | 0.0587 ns | 0.0102 |      48 B |
+```
+
 
 # 6. Considerations
 

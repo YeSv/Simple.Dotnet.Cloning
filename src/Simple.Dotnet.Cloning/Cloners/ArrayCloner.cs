@@ -6,7 +6,7 @@ namespace Simple.Dotnet.Cloning.Cloners
     {
         public static class SingleDim
         {
-            public static T[] ShallowClone<T>(T[] array)
+            public static T[]? ShallowClone<T>(T[]? array)
             {
                 if (array == null) return null;
                 if (array.Length == 0) return Array.Empty<T>();
@@ -17,7 +17,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static T[] DeepClone<T>(T[] array)
+            public static T[]? DeepClone<T>(T[]? array)
             {
                 if (array == null) return null;
                 if (array.Length == 0) return Array.Empty<T>();
@@ -31,7 +31,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 
         public static class TwoDim
         {
-            public static T[,] ShallowClone<T>(T[,] array)
+            public static T[,]? ShallowClone<T>(T[,]? array)
             {
                 if (array == null) return null;
 
@@ -47,7 +47,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static T[,] DeepClone<T>(T[,] array)
+            public static T[,]? DeepClone<T>(T[,]? array)
             {
                 if (array == null) return null;
 
@@ -66,7 +66,7 @@ namespace Simple.Dotnet.Cloning.Cloners
 
         public static class ThreeDim
         {
-            public static T[,,] ShallowClone<T>(T[,,] array)
+            public static T[,,]? ShallowClone<T>(T[,,]? array)
             {
                 if (array == null) return null;
 
@@ -85,7 +85,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static T[,,] DeepClone<T>(T[,,] array)
+            public static T[,,]? DeepClone<T>(T[,,]? array)
             {
                 if (array == null) return null;
 
@@ -108,7 +108,7 @@ namespace Simple.Dotnet.Cloning.Cloners
         public static class FourDim
         {
 
-            public static T[,,,] ShallowClone<T>(T[,,,] array)
+            public static T[,,,]? ShallowClone<T>(T[,,,]? array)
             {
                 if (array == null) return null;
 
@@ -130,7 +130,7 @@ namespace Simple.Dotnet.Cloning.Cloners
                 return clone;
             }
 
-            public static T[,,,] DeepClone<T>(T[,,,] array)
+            public static T[,,,]? DeepClone<T>(T[,,,]? array)
             {
                 if (array == null) return null;
 

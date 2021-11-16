@@ -10,11 +10,11 @@ namespace Simple.Dotnet.Cloning.Generators
     {
         static readonly MethodInfo GetUninitializedObject = typeof(FormatterServices).GetMethod(
             nameof(FormatterServices.GetSafeUninitializedObject),
-            BindingFlags.Public | BindingFlags.Static);
+            BindingFlags.Public | BindingFlags.Static)!;
 
         static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod(
             nameof(Type.GetTypeFromHandle),
-            BindingFlags.Public | BindingFlags.Static);
+            BindingFlags.Public | BindingFlags.Static)!;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ILGenerator Init(this ILGenerator generator, Type type)
