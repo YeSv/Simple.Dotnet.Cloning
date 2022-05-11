@@ -26,14 +26,20 @@ namespace Simple.Dotnet.Cloning.Tests.Object
             obj.Enumerable = (IEnumerable<int>)Enumerable.Range(0, 100).ToArray();
             obj.Object = (object)new ExpandoObjectTests();
             obj.HashSet = new HashSet<object> { "test", 10, Guid.NewGuid() };
+            obj.Null = (object)null;
+            obj.HashNull = (HashSet<object>)null;
+            obj.Expando = new ExpandoObject();
 
             dynamic clone = ((ExpandoObject)obj).ShallowClone();
             (((ExpandoObject)clone) != ((ExpandoObject)obj)).Should().BeTrue();
+            ShouldBeEqual<object>(obj.Null, clone.Null);
+            ShouldBeEqual<HashSet<object>>(obj.HashNull, clone.HashNull);
             ShouldBeEqual<Guid>(obj.Guid, clone.Guid);
             ShouldBeEqual<int?>(obj.Nullable, clone.Nullable);
             ShouldBeEqual<IEnumerable<int>>(obj.Enumerable, clone.Enumerable);
             ShouldBeEqual<object>(obj.Object, clone.Object);
             ShouldBeEqual<HashSet<object>>(obj.HashSet, clone.HashSet);
+            ShouldBeEqual<ExpandoObject>(obj.Expando, clone.Expando);
         }
 
         [Fact]
@@ -46,14 +52,20 @@ namespace Simple.Dotnet.Cloning.Tests.Object
             obj.Enumerable = (IEnumerable<int>)Enumerable.Range(0, 100).ToArray();
             obj.Object = (object)new ExpandoObjectTests();
             obj.HashSet = new HashSet<object> { "test", 10, Guid.NewGuid() };
+            obj.Null = (object)null;
+            obj.HashNull = (HashSet<object>)null;
+            obj.Expando = new ExpandoObject();
 
             dynamic clone = ((ExpandoObject)obj).DeepClone();
             (((ExpandoObject)clone) != ((ExpandoObject)obj)).Should().BeTrue();
             ShouldBeEqual<Guid>(obj.Guid, clone.Guid);
             ShouldBeEqual<int?>(obj.Nullable, clone.Nullable);
+            ShouldBeEqual<object>(obj.Null, clone.Null);
+            ShouldBeEqual<HashSet<object>>(obj.HashNull, clone.HashNull);
             ShoulBeStructurallyEqual<IEnumerable<int>>(obj.Enumerable, clone.Enumerable);
             ShouldNotBeEqualByReference<object>(obj.Object, clone.Object);
             ShoulBeStructurallyEqual<HashSet<object>>(obj.HashSet, clone.HashSet);
+            ShouldNotBeEqualByReference<ExpandoObject>(obj.Expando, clone.Expando);
         }
 
         static void ShouldBeEqual<T>(dynamic first, dynamic second) => ((T)first).Should().Be((T)second);

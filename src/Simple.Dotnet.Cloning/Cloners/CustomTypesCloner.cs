@@ -2,6 +2,7 @@
 using System.Buffers;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Reflection;
 
 namespace Simple.Dotnet.Cloning.Cloners
@@ -148,6 +149,32 @@ namespace Simple.Dotnet.Cloning.Cloners
                 #endif
 
                 foreach (var item in dictionary) clone[RootCloner<TKey>.DeepClone(item.Key)] = RootCloner<TValue>.DeepClone(item.Value);
+
+                return clone;
+            }
+        }
+        
+        public static class Dynamic
+        {
+            public static readonly MethodInfo ExpandoObjectMethod = typeof(Dynamic).GetMethod(
+                nameof(Dynamic.CloneExpandoObject),
+                BindingFlags.Static | BindingFlags.Public)!;
+
+            public static ExpandoObject? CloneExpandoObject(ExpandoObject? obj)
+            {
+                if (obj == null) return null;
+
+                var clone = new ExpandoObject();
+                var dict = (IDictionary<string, object?>)clone;
+                
+                foreach (var entry in obj)
+                {
+                    dict[entry.Key] = entry.Value switch
+                    {
+                        null => null,
+                        var v => ObjectCloner.DeepClone(v, v.GetType())
+                    };
+                }
 
                 return clone;
             }
