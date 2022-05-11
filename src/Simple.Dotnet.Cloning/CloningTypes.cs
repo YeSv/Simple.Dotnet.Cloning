@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime;
@@ -187,14 +188,16 @@ namespace Simple.Dotnet.Cloning
             [typeof(Dictionary<,>)] = t => Collections.DictionaryOpenedMethod.MakeGenericMethod(t),
             [typeof(SortedDictionary<,>)] = t => Collections.SortedDictionaryOpenedMethod.MakeGenericMethod(t),
 
-            #if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER
             [typeof(PriorityQueue<,>)] = t => Collections.PriorityQueueOpenedMethod.MakeGenericMethod(t),
-            #endif
+#endif
 
             [typeof(ConcurrentBag<>)] = t => Concurrent.BagOpenedMethod.MakeGenericMethod(t),
             [typeof(ConcurrentStack<>)] = t => Concurrent.StackOpenedMethod.MakeGenericMethod(t),
             [typeof(ConcurrentQueue<>)] = t => Concurrent.QueueOpenedMethod.MakeGenericMethod(t),
             [typeof(ConcurrentDictionary<,>)] = t => Concurrent.DictionaryOpenedMethod.MakeGenericMethod(t),
+
+            [typeof(ExpandoObject)] = t => Dynamic.ExpandoObjectMethod
         };
     }
 }
